@@ -9,8 +9,8 @@ def call():
     while True:
         if CLIENT.is_connected():
             update_attributes_lock.acquire()
-            gw_client_attributes = format_client_attributes(replica_client_attributes())
-            gw_shared_attributes = format_client_attributes(fake_shared_attributes())
+            gw_client_attributes = format_attributes(update_attributes)
+            gw_shared_attributes = format_attributes(shared_attributes)
             if gw_client_attributes:
                 for key, value in gw_client_attributes.items():
                     CLIENT.gw_send_attributes(key, value)
@@ -27,75 +27,7 @@ def call():
         time.sleep(period)
 
 
-def replica_client_attributes():
-    attributes = {
-        "miscDin4": 0,
-        "miscDin5": 0,
-        "miscDin6": 0,
-        "miscDin7": 0,
-        "miscFanState": 0,
-        "miscBellState": 0,
-        "miscV12": 1,
-        "miscVbus": 1,
-        "aircOnlineStatus": 1,
-        "aircAirc1RunState": 0,
-        "aircAirc1Error": 0,
-        "aircAirc2RunState": 0,
-        "aircAirc2Error": 0,
-        "aircAirc1RunThreshold": 26,
-        "aircAirc2RunThreshold": 26,
-        "aircAirc1Command": 1,
-        "aircAirc2Command": 1,
-        "aircIrStatus": 1,
-        "aircLearnCmdId": 0,
-        "atsOnlineStatus": 1,
-        "atsType": 1,
-        "atsBatFull": 1,
-        "atsIsAllBatFull": 0,
-        "atsGscType": 1,
-        "atsGscPwrCounter": 1,
-        "atsGscAlarm": 0,
-        "atuOnlineStatus": 1,
-        "crmuOnlineStatus": 1,
-        "crmuCardId": "AAA",
-        "dcOnlineStatus": 1,
-        "dcRectState": 1
-    }
-
-    return attributes
-
-
-def fake_shared_attributes():
-    attributes = {
-        "periodReadDataIO": 0.05,
-        "periodSendTelemetry": 50,
-        "periodUpdate": 5,
-        "miscExpectedTemp": 26,
-        "miscMinTemp": 20,
-        "miscMaxTemp": 32,
-        "miscMaxHumid": 80,
-        "miscFanControlAuto": 1,
-        "aircControlAuto": 1,
-        "aircBalance": 2,
-        "aircVacThThreshold": 180,
-        "aircGenAllow": 1,
-        "aircCycle": 180,
-        "atsControlAuto": 1,
-        "atsMaxRunTime": 240,
-        "atsMinRestTime": 120,
-        "atsTestEn": 0,
-        "atsVdcThreshold": 48,
-        "atsVacThreshold": 160,
-        "atsTestStart": 0,
-        "atsTestCycle": 10080,
-        "atsTestTime": 5,
-        "crmuControlAuto": 1
-    }
-
-    return attributes
-
-
-def format_client_attributes(dict_attributes):
+def format_attributes(dict_attributes):
     list_client_attributes = {DEVICE_MDC_1: {}, DEVICE_MCC_1: {}, DEVICE_ATS_1: {}, DEVICE_ACM_1: {}}
     client_attributes_mdc_1 = {}
     client_attributes_mcc_1 = {}

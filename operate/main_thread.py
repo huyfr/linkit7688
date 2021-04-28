@@ -9,7 +9,7 @@ from config.common import *
 from config.default_data import data_dict
 from devices import clock
 from . import subscription_thread, monitor_thread, io_thread, telemetry_thread, update_attributes_thread, ui_thread
-from .update_attributes_thread import format_client_attributes, get_list_key
+from .update_attributes_thread import format_attributes, get_list_key
 
 semaphore = threading.Semaphore(0)
 
@@ -71,14 +71,14 @@ def call():
             clock.set()
             LOGGER.debug('Get original attributes')
             #shared_attributes
-            device_shared_attributes_name = format_client_attributes(data_dict['shared'])
+            device_shared_attributes_name = format_attributes(data_dict['shared'])
             for key, value in device_shared_attributes_name.items():
                 list_shared_keys = get_list_key(value)
                 CLIENT.gw_request_shared_attributes(key, list_shared_keys, _on_receive_shared_attributes_callback)
                 semaphore.acquire()
 
             #client_attributes
-            device_client_attributes_name = format_client_attributes(data_dict['client'])
+            device_client_attributes_name = format_attributes(data_dict['client'])
             for key, value in device_client_attributes_name.items():
                 list_client_keys = get_list_key(value)
                 CLIENT.gw_request_client_attributes(key, list_client_keys, _on_receive_client_attributes_callback)
