@@ -122,13 +122,13 @@ def show_temp_condition():
             temp1 = telemetries['acmAirc1RunState']
             if temp1 == 0:
                 cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa1: Tat', ROW_2)
-            else:
+            if temp1 == 1:
                 cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa 1: Bat', ROW_2)
         if 'acmAirc2RunState' in telemetries:
             temp2 = telemetries['acmAirc2RunState']
             if temp2 == 0:
                 cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa 2: Tat', ROW_3)
-            else:
+            if temp2 == 1:
                 cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa 2: Bat', ROW_3)
         if 'acmAutoMode' in telemetries:
             mode = telemetries['acmAutoMode']
