@@ -66,8 +66,10 @@ def replica_telemetry():
     "atsIloadP3": 22,
     "atsPac1": 22,
     "atsPac2": 24,
-    "atsPac3": 25
-
+    "atsPac3": 25,
+    "acmAirc1RunState": 0,
+    "acmAirc2RunState": 1,
+    "acmAutoMode": 1,
     }
 
     return telemetry

@@ -26,7 +26,6 @@ dct_lcd_menu_level_lv1 = dct_lcd_menu_level['lv1']
 last_alarm_update = Alarm_lcd()
 BAN_TIN_CANH_BAO = 'BAN TIN CANH BAO'
 
-
 def call():
     try:
         period = 3
@@ -106,6 +105,42 @@ def check_alarm():
         LOGGER.info('Enter show alarm function')
         for i in cmd_lcd_dict:
             add_cmd_lcd(cmd_lcd_dict[i])
+        LOGGER.info('Exit show alarm function')
+    except Exception as ex:
+        LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
+
+
+# Button Dieu Hoa
+def show_temp_condition():
+    cmd_lcd_temp = {}
+    cmd_lcd_temp[1] = creat_cmd_rule('BAN TIN DIEU HOA', ROW_1)
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    try:
+        LOGGER.info('Check Telemetries: %s', telemetries)
+        if 'acmAirc1RunState' in telemetries:
+            temp1 = telemetries['acmAirc1RunState']
+            if temp1 == 0:
+                cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa1: Tat', ROW_2)
+            else:
+                cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa 1: Bat', ROW_2)
+        if 'acmAirc2RunState' in telemetries:
+            temp2 = telemetries['acmAirc2RunState']
+            if temp2 == 0:
+                cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa 2: Tat', ROW_3)
+            else:
+                cmd_lcd_temp[2] = creat_cmd_rule('Dieu Hoa 2: Bat', ROW_3)
+        if 'acmAutoMode' in telemetries:
+            mode = telemetries['acmAutoMode']
+            if mode == 1:
+                cmd_lcd_temp[4] = creat_cmd_rule('Che Do: Auto', ROW_4)
+            if mode == 0:
+                cmd_lcd_temp[4] = creat_cmd_rule('Che Do: Manual', ROW_4)
+        LOGGER.info('Get list txt row: %s', cmd_lcd_temp)
+        multi_cmd_lcd_enable()
+        LOGGER.info('Enter show_tempCondition function')
+        for i in cmd_lcd_temp:
+            add_cmd_lcd(cmd_lcd_temp[i])
         LOGGER.info('Exit show alarm function')
     except Exception as ex:
         LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
