@@ -261,7 +261,9 @@ def get_temp_tram():
             check = any(elem != 0 for elem in new_list_telemetries.values())
             warning = '!!!' if check else ''
             LOGGER.info('Warning: %s', warning)
-        if (acmTempInOld != acmTempIn or acmTempOutOld != acmTempOut or acmHumidInOld != acmHumidIn or warningOld != warning) and (acmTempIn is not None and acmTempOut is not None and acmHumidIn is not None):
+        if (
+                acmTempInOld != acmTempIn or acmTempOutOld != acmTempOut or acmHumidInOld != acmHumidIn or warningOld != warning) and (
+                acmTempIn is not None and acmTempOut is not None and acmHumidIn is not None):
             Recheck = {"acmTempIndoor": acmTempIn, "acmTempOutdoor": acmTempOut, "acmHumidIndoor": acmHumidIn,
                        "isWarning": warning}
             write_to_json(Recheck, './last_temp.json')
@@ -383,6 +385,39 @@ def check_alarm(tel_lcd):
     return cmd_lcd_dict
 
 
+# VANAA
+def show_temp_condition():
+    show = 'BAN TIN DIEU HOA' + SALT_DOLLAR_SIGN + str(ROW_1) + END_CMD
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    try:
+        LOGGER.info('Check Telemetries: %s', telemetries)
+        if 'acmAirc1RunState' in telemetries:
+            temp1 = telemetries['acmAirc1RunState']
+            if temp1 == 0:
+                show += 'Dieu Hoa1: Tat' + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
+            if temp1 == 1:
+                show += 'Dieu Hoa1: Bat' + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
+        if 'acmAirc2RunState' in telemetries:
+            temp2 = telemetries['acmAirc2RunState']
+            if temp2 == 0:
+                show += 'Dieu Hoa2: Tat' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+            if temp2 == 1:
+                show += 'Dieu Hoa2: Bat' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+        if 'acmAutoMode' in telemetries:
+            mode = telemetries['acmAutoMode']
+            if mode == 1:
+                show += 'Che Do: Auto' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+            if mode == 0:
+                show += 'Che Do: Manual' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+        LOGGER.info('Get list txt row: %s', show)
+        cmd_lcd[UPDATE_VALUE] = show
+        LOGGER.info('Enter show_tempCondition function')
+        LOGGER.info('Exit show alarm function')
+    except Exception as ex:
+        LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
+
+
 def create_for_each(string1, string2):
     try:
         el1 = create_cmd_multi(string1, ROW_2)
@@ -395,4 +430,3 @@ def create_for_each(string1, string2):
 
 def create_cmd_multi(string, row):
     return str(string) + SALT_DOLLAR_SIGN + str(row) + END_CMD
-
