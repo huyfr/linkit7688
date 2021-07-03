@@ -395,21 +395,27 @@ def show_temp_condition():
         if 'acmAirc1RunState' in telemetries:
             temp1 = telemetries['acmAirc1RunState']
             if temp1 == 0:
-                show += 'Dieu Hoa1: Tat' + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
+                show += 'Dieu Hoa1: Tat' + SALT_DOLLAR_SIGN + str(ROW_2)
             if temp1 == 1:
-                show += 'Dieu Hoa1: Bat' + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
+                show += 'Dieu Hoa1: Bat' + SALT_DOLLAR_SIGN + str(ROW_2)
         if 'acmAirc2RunState' in telemetries:
             temp2 = telemetries['acmAirc2RunState']
             if temp2 == 0:
-                show += 'Dieu Hoa2: Tat' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+                show += '  Dieu Hoa2: Tat' + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
             if temp2 == 1:
-                show += 'Dieu Hoa2: Bat' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+                show += '  Dieu Hoa2: Bat' + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
         if 'acmAutoMode' in telemetries:
             mode = telemetries['acmAutoMode']
             if mode == 1:
-                show += 'Che Do: Auto' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+                show += 'Quat: Bat' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
             if mode == 0:
-                show += 'Che Do: Manual' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+                show += 'Quat: Tat' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+        if 'acmAutoMode' in telemetries:
+            mode = telemetries['acmFanRunState']
+            if mode == 1:
+                show += 'Che Do: Auto' + SALT_DOLLAR_SIGN + str(ROW_4)
+            if mode == 0:
+                show += 'Che Do: Manual' + SALT_DOLLAR_SIGN + str(ROW_4)
         LOGGER.info('Get list txt row: %s', show)
         cmd_lcd[UPDATE_VALUE] = show
         LOGGER.info('Enter show_tempCondition function')
