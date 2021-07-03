@@ -254,22 +254,16 @@ def compose_command_lcd(key_lcd, content):
                     arr_char = [item for index, item in enumerate(arr_char) if index <= 15]
                 elif len(arr_char) < 16:
                     need_add_space = 16 - len(arr_char)
-                    posfix = ''.join([char * need_add_space for char in CHAR_SPACE])
-                    arr_char.extend([char for char in posfix])
+                    postfix = ''.join([char * need_add_space for char in CHAR_SPACE])
+                    arr_char.extend([char for char in postfix])
                 prefix = ''.join([char * len(arr_char) for char in CHAR_S])
                 length = len(arr_char) + 3
                 row = int(str_split[1])
                 result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
                 return result
             elif key_lcd == CLEAR:
-                # length = 2
-                # result = struct.pack('BBBB', 0xA0, length, op_code_lcd, key_lcd)
-                str_empty = ''.join([char * 16 for char in CHAR_SPACE])
-                arr_char = [char for char in str_empty]
-                prefix = ''.join([char * len(arr_char) for char in CHAR_S])
-                length = len(arr_char) + 3
-                row = int(str_split[1])
-                result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
+                length = 2
+                result = struct.pack('BBBB', 0xA0, length, op_code_lcd, key_lcd)
                 return result
         else:
             str_empty = ''.join([char * 16 for char in CHAR_SPACE])
@@ -282,7 +276,6 @@ def compose_command_lcd(key_lcd, content):
 
     except Exception as ex:
         LOGGER.error('Error at compose_command_lcd function with message: %s', ex.message)
-
 
 
 def _process_cmd_led(length_led, arr_value):

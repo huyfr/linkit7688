@@ -5,7 +5,7 @@ from monitor import *
 
 
 def call():
-    period = 3
+    period = 60
     while True:
         LOGGER.info('Enter monitor thread. This is log for test')
         # mcc.check_status()

@@ -17,8 +17,12 @@ def extract(byte_data):
     atsGenState = bytes_to_int(byte_data[9])
     atsState = bytes_to_int(byte_data[10])
     atsErrorState = bytes_to_int(byte_data[11])
-    atsMode = bytes_to_int(byte_data[12], byteorder=BYTE_ORDER)
+    atsMode = bytes_to_int(byte_data[12])
     atsConnect = bytes_to_int(byte_data[13])
+
+    # uncomment when update STM32
+    # atsVgenThresholdState = bytes_to_int(byte_data[50])
+    # atsVacThresholdState = bytes_to_int(byte_data[51])
 
     #telemetry
     atsVacFreq = bytes_to_int(byte_data[14:16], byteorder=BYTE_ORDER)
@@ -76,3 +80,7 @@ def extract(byte_data):
     _read_attribute('atsErrorState', atsErrorState)
     _read_attribute('atsMode', atsMode)
     _read_attribute('atsConnect', atsConnect)
+
+    # uncomment when update STM32
+    # _read_attribute('atsVgenThresholdState', atsVgenThresholdState)
+    # _read_attribute('atsVacThresholdState', atsVacThresholdState)

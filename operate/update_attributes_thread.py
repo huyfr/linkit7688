@@ -1,7 +1,6 @@
 import time
 
 from config import *
-from config.common import *
 
 
 def call():
@@ -10,13 +9,9 @@ def call():
         if CLIENT.is_connected():
             update_attributes_lock.acquire()
             gw_client_attributes = format_client_attributes(update_attributes)
-            # gw_shared_attributes = format_client_attributes(shared_attributes)
             if gw_client_attributes:
                 for key, value in gw_client_attributes.items():
                     CLIENT.gw_send_attributes(key, value)
-                # if gw_shared_attributes:
-                #     for key, value in gw_shared_attributes.items():
-                #         CLIENT.gw_send_attributes(key, value)
                 LOGGER.info('Sent changed client attributes')
                 log_info = []
                 for key, value in update_attributes.items():
