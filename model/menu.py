@@ -9,6 +9,7 @@ from services.lcd.main_screen_lcd_services import main_screen
 from services.lcd.rfid_screen_lcd_sevices import rfid_screen
 from services import lcd_cmd
 from services.lcd.security_sensor_screen_icd_sevices import *
+from services.lcd.setting_form import  setting_screen_form
 
 class Display:
     def __init__(self):
@@ -144,6 +145,8 @@ class Display:
     def case_6(self):
         return self.rfid_display()
 
+# ben duoi la code cho cac man hinh setting
+
     def setting_display(self):
         try:
             LOGGER.info('Enter setting_display function')
@@ -190,6 +193,9 @@ class Display:
         except Exception as ex:
             LOGGER.info('Fail to connect to server with message: %s', ex.message)
 
+
+    ##################
+    #cac doan code duoi day co the duoc thay the bang ham setting_screen_form() neu muon
     def setting_menu_0(self):
         # USER CODE BEGIN
         lcd_cmd.print_lcd('CAI DAT HE THONG', ROW_1)
@@ -241,6 +247,10 @@ class Display:
         lcd_cmd.print_lcd('   Canh bao     ', ROW_2)
         lcd_cmd.print_lcd('   ATS          ', ROW_3)
         lcd_cmd.print_lcd('-> Phu kien     ', ROW_4)
+
+    ##############
+
+    # code cho cac man hinh setting, viet lai ( 6 man hinh)
 
         # USER CODE END
 
