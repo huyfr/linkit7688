@@ -4,16 +4,21 @@ import requests
 
 from config import *
 from config.common import *
+from config.common_api import *
 from config.common_lcd_services import *
 from devices.utils import read_lcd_services
 from model.alarm_lcd import Alarm_lcd
 from model.lcd import Lcd
+from services.lcd.alarm_lcd_services import check_alarm, delete_row4
+from operate.led_thread import get_sate_led_alarm
+from operate.rfid_thread import KEY_RFID
+from services.lcd.main_screen_lcd_services import write_to_json
 from services.lcd_cmd import clear_display
 from utility import bytes_to_int
 from model import menu
 
-URL_SEND_SA = 'http://123.30.214.139:8517/api/services/app/DMTram/ChangeValueTemplate'
-menu_level_1 = [MCC, ACM, ATS]
+url_send_sa = PREFIX + DOMAIN + API_UPDATE_SHARED_ATTRIBUTES
+url_get_staff = PREFIX + DOMAIN + API_GET_STAFF
 LIST_KEY_EVENT = [EVENT_NONE, EVENT_DOWN, EVENT_UP, EVENT_HOLD, EVENT_POWER]
 LIST_KEY_CODE = [KEYCODE_11, KEYCODE_16, KEYCODE_14, KEYCODE_34, KEYCODE_26, KEYCODE_24, KEYCODE_13, KEYCODE_12]
 json_file = open('config/lcd.json')
@@ -23,29 +28,176 @@ dct_lcd_menu_level = dct_lcd_menu['level']
 dct_lcd_menu_level_lv1 = dct_lcd_menu_level['lv1']
 last_alarm_update = Alarm_lcd()
 BAN_TIN_CANH_BAO = 'BAN TIN CANH BAO'
+timeOld = '61'
+titleOld = ''
+acmTempInOld = ''
+acmTempOutOld = ''
+acmHumidInOld = ''
+warningOld = ''
 
 
 def call():
     try:
         period = 3
-        lcd = menu.Display()
-        clear_display()
         while True:
-            lcd.menu(button_status[0])
-            clear_display()
+            check_key_code()
+            # lcd.menu(button_status[0])
             time.sleep(period)
     except Exception as ex:
         LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
 
 
+def check_key_code():
+    try:
+        result_check_input = check_lcd_service(lcd_services)
+        json_file = open('./last_trace_lcd.json', )
+        last_trace = json.load(json_file)
+        a = last_trace['key_code']
+        b = last_trace['key_event']
+        LOGGER.info('OLD KEY CODE: %s', str(a))
+        if result_check_input.key_code > 0 and result_check_input.key_event > 0:
+            # cmd_lcd[CLEAR] = ''
+            result_switch_lcd = switch_lcd_service(result_check_input)
+            set_last_trace(result_switch_lcd)
+            lcd_services.clear()
+        elif a > 0 and b > 0:
+            check_last_display(a, b)
+    except Exception as ex:
+        LOGGER.error('Error at call function in check_key_code with message: %s', ex.message)
+
+
+def check_last_display(key_code, key_event):
+    try:
+        if key_code == KEYCODE_11 and key_event == EVENT_UP:
+            screen_main()
+        elif key_code == KEYCODE_12 and key_event == EVENT_UP:
+            check_alarm()
+    except Exception as ex:
+        LOGGER.error('Error at call function in check_last_display with message: %s', ex.message)
+
+
+# HungLq
+def screen_main():
+    try:
+        get_title_main()
+        get_datetime_now()
+        get_temp_tram()
+        get_user_tram()
+    except Exception as ex:
+        LOGGER.error('Error at call function in screen_main with message: %s', ex.message)
+
+
+def read_to_json(fileUrl):
+    try:
+        json_file = open(fileUrl, )
+        json_info = json.load(json_file)
+    except Exception as ex:
+        LOGGER.error('Error at call function in read_to_json with message: %s', ex.message)
+    return json_info
+
+
+def get_datetime_now():
+    global timeOld
+    try:
+        timeNew = datetime.now().strftime("%M")
+        if timeNew != timeOld:
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M")
+            show = str(dt_string) + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
+            cmd_lcd[UPDATE_VALUE] = show
+            LOGGER.info('MAIN SCREEN DATETIME NOW: %s', str(show))
+            timeOld = timeNew
+    except Exception as ex:
+        LOGGER.error('Error at call function in check_key_code with message: %s', ex.message)
+
+
+def get_title_main():
+    global titleOld
+    try:
+        if titleOld == '':
+            show = 'MAKE IN MOBIFONE' + SALT_DOLLAR_SIGN + str(ROW_1) + END_CMD
+            cmd_lcd[UPDATE_VALUE] = show
+            titleOld = 'MAKE IN MOBIFONE'
+            LOGGER.info('MAIN SCREEN TITLE: %s', str(show))
+    except Exception as ex:
+        LOGGER.error('Error at set_title_main function with message: %s', ex.message)
+
+
+def get_temp_tram():
+    global acmTempInOld
+    global acmTempOutOld
+    global acmHumidInOld
+    global warningOld
+    try:
+        warning = ''
+        tel = read_to_json('./latest_telemetry.json')
+        acmTempIn = tel.get('acmTempIndoor')
+        acmTempOut = tel.get('acmTempOutdoor')
+        acmHumidIn = tel.get('acmHumidIndoor')
+        new_list = dict(filter(lambda elem: elem[0].lower().find('state') != -1, tel.items()))
+        if len(new_list) > 0:
+            check = any(elem != 0 for elem in new_list.values())
+            warning = '!!!' if check else ''
+        if (
+                acmTempInOld != acmTempIn or acmTempOutOld != acmTempOut or acmHumidInOld != acmHumidIn or warningOld != warning) and (
+                acmTempIn is not None and acmTempOut is not None and acmHumidIn is not None):
+            acmTempInOld = acmTempIn
+            acmTempOutOld = acmTempOut
+            acmHumidInOld = acmHumidIn
+            warningOld = warning
+            show = str(acmTempIn) + ' ' + str(acmTempOut) + ' ' + str(
+                acmHumidIn) + ' ' + warning + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+            cmd_lcd[UPDATE_VALUE] = show
+            LOGGER.info('MAIN SCREEN TEMP AND ALARM NOW: %s', str(show))
+    except Exception as ex:
+        LOGGER.error('Error at get_temp_tram function with message: %s', ex.message)
+
+
+def get_user_tram():
+    try:
+        rfid = read_to_json('./latest_client_attributes.json')
+        if KEY_RFID in rfid:
+            rfid_card = rfid.get(KEY_RFID)
+            staffCode = rfid_card
+            param = {'input': rfid_card}
+            response = requests.get(url=url_get_staff, params=param)
+            if response.status_code == 200:
+                LOGGER.info('Send log request to Smartsite successful!')
+                staff = json.loads(response.content)['result']
+                if staff is not None:
+                    staffCode = json.loads(response.content)['result']['maNhanVien']
+            show = str(staffCode) + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+            cmd_lcd[UPDATE_VALUE] = show
+            dt_string = datetime.now().strftime("%d/%m/%Y %H:%M")
+            rfid_info = {"Time": dt_string, "StaffCode": staffCode}
+            write_to_json(rfid_info, './last_rfid_card_code.json')
+            LOGGER.info('MAIN SCREEN RFIDCODE OR STAFFCODE NOW: %s', str(show))
+    except Exception as ex:
+        LOGGER.error('Error at get_user_tram function with message: %s', ex.message)
+
+
 # HuyTQ
 def switch_lcd_service(input_lcd):
     last_trace = Lcd()
+    global titleOld
+    global acmTempInOld
+    global acmTempOutOld
+    global acmHumidInOld
+    global warningOld
+    global timeOld
     try:
         key_event = input_lcd.key_event
         key_code = input_lcd.key_code
         if key_event == EVENT_UP:
-            if key_code == KEYCODE_16:
+            if key_code == KEYCODE_11:
+                titleOld = ''
+                acmTempInOld = 0
+                acmTempOutOld = 0
+                acmHumidInOld = 0
+                warningOld = ''
+                timeOld = '61'
+                screen_main()
+            elif key_code == KEYCODE_16:
                 last_trace.category = dct_lcd_menu['id']
                 last_trace.level = dct_lcd_menu_level['levelId']
                 last_trace.index_level1 = dct_lcd_menu_level_lv1[0]['index']
@@ -59,7 +211,9 @@ def switch_lcd_service(input_lcd):
             elif key_code == KEYCODE_13:
                 pass
             elif key_code == KEYCODE_12:
-                pass
+                remove_json_file_alarm()
+                delete_row4()
+                check_alarm()
             elif key_event == EVENT_DOWN:
                 pass
             elif key_event == EVENT_HOLD:
@@ -153,7 +307,7 @@ def write_body_send_shared_attributes(key, value):
 def send_shared_attributes(body):
     result = False
     try:
-        response = requests.post(url=URL_SEND_SA, json=body)
+        response = requests.post(url=url_send_sa, json=body)
         if response.status_code == 200:
             LOGGER.info('Send shared attributes to Smartsite successful!')
             result = True
@@ -234,151 +388,13 @@ def check_lcd_service(dct_lcd_service):
     return input_lcd
 
 
-# HungLQ
-def get_temp_tram():
+#Nguyenvq
+def remove_json_file_alarm():
     try:
-        warning = ''
-        json_file = open('./last_temp.json', )
-        temp = json.load(json_file)
-        acmTempInOld = temp['acmTempIndoor']
-        acmTempOutOld = temp['acmTempOutdoor']
-        acmHumidInOld = temp['acmHumidIndoor']
-        warningOld = temp['isWarning']
-        acmTempIn = telemetries.get('acmTempIndoor')
-        acmTempOut = telemetries.get('acmTempOutdoor')
-        acmHumidIn = telemetries.get('acmHumidIndoor')
-        check = get_sate_led_alarm(telemetries)
-        warning = '!!!' if check == 0 else ''
-        LOGGER.info('Warning: %s', warning)
-        if (
-                acmTempInOld != acmTempIn or acmTempOutOld != acmTempOut or acmHumidInOld != acmHumidIn or warningOld != warning) and (
-                acmTempIn is not None and acmTempOut is not None and acmHumidIn is not None):
-            Recheck = {"acmTempIndoor": acmTempIn, "acmTempOutdoor": acmTempOut, "acmHumidIndoor": acmHumidIn,
-                       "isWarning": warning}
-            write_to_json(Recheck, './last_temp.json')
-            show = str(acmTempIn) + ' ' + str(acmTempOut) + ' ' + str(
-                acmHumidIn) + ' ' + warning + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
-            cmd_lcd[UPDATE_VALUE] = show
-            LOGGER.info('acmTempIndoor, acmTempOutdoor, acmHumidIndoor: %s', show)
+        file_json = read_to_json('./last_cmd_alarm.json')
+        file_json['row1'] = ""
+        file_json['row2'] = ""
+        file_json['row3'] = ""
+        write_to_json(file_json, './last_cmd_alarm.json')
     except Exception as ex:
-        LOGGER.error('Error at get_temp_tram function with message: %s', ex.message)
-
-
-def get_user_tram():
-    try:
-        if KEY_RFID in client_attributes:
-            rfid_card = client_attributes.get(KEY_RFID)
-            staffCode = rfid_card
-            param = {'input': rfid_card}
-            response = requests.get(url=URL_NV, params=param)
-            if response.status_code == 200:
-                LOGGER.info('Send log request to Smartsite successful!')
-                staff = json.loads(response.content)['result']
-                if staff is not None:
-                    staffCode = json.loads(response.content)['result']['maNhanVien']
-            show = str(staffCode) + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
-            cmd_lcd[UPDATE_VALUE] = show
-            LOGGER.info('Ma nhan vien: %s', show)
-    except Exception as ex:
-        LOGGER.error('Error at get_user_tram function with message: %s', ex.message)
-
-
-def get_datetime_now():
-    try:
-        json_file = open('./last_time.json', )
-        timeOld = json.load(json_file)
-        timeNew = datetime.now().strftime("%M")
-        if timeNew != timeOld:
-            write_to_json(timeNew, './last_time.json')
-            now = datetime.now()
-            dt_string = now.strftime("%d/%m/%Y %H:%M")
-            show = str(dt_string) + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
-            cmd_lcd[UPDATE_VALUE] = show
-            LOGGER.info('DateTime now: %s', show)
-    except Exception as ex:
-        LOGGER.error('Error at get_datetime_now function with message: %s', ex.message)
-
-
-def get_title_main():
-    try:
-        show = 'MAKE IN MOBIFONE' + SALT_DOLLAR_SIGN + str(ROW_1) + END_CMD
-        cmd_lcd[UPDATE_VALUE] = show
-        LOGGER.info('Title: %s', show)
-    except Exception as ex:
-        LOGGER.error('Error at set_title_main function with message: %s', ex.message)
-
-
-def write_to_json(body, fileUrl):
-    try:
-        json_last_trace = json.dumps(body)
-        with io.open(fileUrl, 'wb') as last_trace_file:
-            last_trace_file.write(json_last_trace)
-        LOGGER.info('Command information just send: %s', body)
-    except Exception as ex:
-        LOGGER.error('Error at write_to_json function with message: %s', ex.message)
-
-
-def get_screen_main():
-    try:
-        get_title_main()
-        while True:
-            get_user_tram()
-            get_temp_tram()
-            get_datetime_now()
-            time.sleep(3)
-    except Exception as ex:
-        LOGGER.error('Error at get_screen_main function with message: %s', ex.message)
-
-
-# NguyenVQ
-def init_show_alarm():
-    try:
-        cmd_lcd[UPDATE_VALUE] = create_cmd_multi(BAN_TIN_CANH_BAO, ROW_1)
-        LOGGER.info('List telemitries: %s', telemetries)
-        while True:
-            if telemetries:
-                check_alarm(telemetries)
-            time.sleep(3)
-    except Exception as ex:
-        LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
-
-
-def check_alarm(tel_lcd):
-    cmd_lcd_dict = {}
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    try:
-        max_tem = shared_attributes.get('acmExpectedTemp', default_data.acmExpectedTemp)
-        LOGGER.info('MAX TEMPERATURE: %s', max_tem)
-        LOGGER.info('Check list: %s', tel_lcd)
-        if tel_lcd:
-            if tel_lcd.get('mccFireState') == 1:
-                create_for_each('CB Chay!', dt_string)
-            elif tel_lcd.get('mccSmokeState') == 1:
-                create_for_each('CB Khoi!', dt_string)
-            elif tel_lcd.get('acmTempIndoor') > max_tem:
-                create_for_each('CB Nhiet!', dt_string)
-            elif tel_lcd.get('mccFloodState') == 1:
-                create_for_each('CB Ngap!', dt_string)
-            elif tel_lcd.get('mccDoorState') == 1:
-                create_for_each('CB Cua!', dt_string)
-            else:
-                create_for_each('An Toan!', '')
-
-    except Exception as ex:
-        LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
-    return cmd_lcd_dict
-
-
-def create_for_each(string1, string2):
-    try:
-        el1 = create_cmd_multi(string1, ROW_2)
-        el1 += create_cmd_multi(string2, ROW_3)
-        LOGGER.info('CANH BAO : %s', el1)
-        cmd_lcd[UPDATE_VALUE] = el1
-    except Exception as ex:
-        LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
-
-
-def create_cmd_multi(string, row):
-    return str(string) + SALT_DOLLAR_SIGN + str(row) + END_CMD
+        LOGGER.error('Error at remove_json_file_alarm function with message: %s', ex.message)

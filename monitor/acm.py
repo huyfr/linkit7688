@@ -40,6 +40,7 @@ def check_status():
     acmT4Temp = shared_attributes.get('acmT4Temp', default_data.acmT4Temp)
 
     # Client
+    acmOnlineState = client_attributes.get('acmOnlineState', default_data.acmOnlineState)
     # acmAutoMode = client_attributes.get('acmAutoMode', default_data.acmAutoMode)
     # acmTempError = client_attributes.get('acmTempError', default_data.acmTempError)
     # acmHumidError = client_attributes.get('acmHumidError', default_data.acmHumidError)
@@ -99,14 +100,15 @@ def check_status():
         air_enabled = False
 
     # Don't run air-conditioner if low AC
-    if atsContactorElecState == 1 and (atsVacP1 < acmVacThreshold
-                                       or atsVacP2 < acmVacThreshold
-                                       or atsVacP3 < acmVacThreshold) \
-            or atsContactorGenState == 1 and (atsVgenP1 < acmVacThreshold
-                                              or atsVgenP2 < acmVacThreshold
-                                              or atsVgenP3 < acmVacThreshold):
-        LOGGER.debug('# Low AC, don\'t run AIRC')
-        air_enabled = False
+    # TODO: make sure all BTS have 3-phase AC
+    # if atsContactorElecState == 1 and (atsVacP1 < acmVacThreshold
+    #                                    or atsVacP2 < acmVacThreshold
+    #                                    or atsVacP3 < acmVacThreshold) \
+    #         or atsContactorGenState == 1 and (atsVgenP1 < acmVacThreshold
+    #                                           or atsVgenP2 < acmVacThreshold
+    #                                           or atsVgenP3 < acmVacThreshold):
+    #     LOGGER.debug('# Low AC, don\'t run AIRC')
+    #     air_enabled = False
 
     '''
     Auto procedure, High -> Low priority:
@@ -183,9 +185,14 @@ def check_status():
 
     # Counting alternative time, only if 1 airc is running:
     if (acmAirc1NextState and not acmAirc2NextState) or (not acmAirc1NextState and acmAirc2NextState):
-        if timestamp - acm_air_alter_time > acmAlternativeTime:
+        # Set acmAlternativeTime to = to disable alternative mode
+        if timestamp - acm_air_alter_time > acmAlternativeTime > 0:
             acm_air_alter_time = timestamp
             acm_air_alter_state = not acm_air_alter_state
+
+    if not acmOnlineState:
+        LOGGER.debug("ACM not online, won't send command")
+        return ''
 
     '''
     Checking next state and issue command

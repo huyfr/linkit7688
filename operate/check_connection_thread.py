@@ -5,9 +5,10 @@ import time
 import requests
 
 from config import LOGGER, CLIENT_ID
+from config.common_api import *
 
-URL_CHECK_CONNECTION = 'http://123.30.214.139:8517/api/services/app/DMTram/GetTrangThaiTuKetNoi'
 COMMAND_RESET_SERVICE_7688 = '/etc/init.d/7688 stop && /etc/init.d/7688 start'
+url_check_connection = PREFIX + DOMAIN + API_CHECK_CONNECTION
 params = {'gatewayId': CLIENT_ID}
 
 
@@ -15,7 +16,7 @@ def call():
     period = 10
     while True:
         try:
-            response = requests.get(url=URL_CHECK_CONNECTION, params=params)
+            response = requests.get(url=url_check_connection, params=params)
             if response.status_code == 200:
                 LOGGER.info('Send check connection request to Smartsite successful!')
                 active = json.loads(response.content)['result']

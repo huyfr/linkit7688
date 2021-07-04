@@ -16,12 +16,11 @@ def create_cmd_rule(dict_cmd, string, row):
 
 def print_lcd(string, row):
     try:
-        LOGGER.info('Enter print_lcd function')
+        LOGGER.info('Send message print on lcd')
         create_cmd_rule(dict_cmd, string, row)
         add_cmd_lcd(dict_cmd)
-        LOGGER.info('Exit print_lcd function')
     except Exception as ex:
-        LOGGER.info('Fail to connect to server with message: %s', ex.message)
+        LOGGER.info('print_lcd function error: %s', ex.message)
 
 
 def clear_display():

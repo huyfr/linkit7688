@@ -18,31 +18,29 @@ def extract(byte_data):
     atsState = bytes_to_int(byte_data[10])
     atsErrorState = bytes_to_int(byte_data[11])
     atsMode = bytes_to_int(byte_data[12])
-    atsConnect = bytes_to_int(byte_data[13])
-
-    # uncomment when update STM32
-    # atsVgenThresholdState = bytes_to_int(byte_data[50])
-    # atsVacThresholdState = bytes_to_int(byte_data[51])
+    atsConnect = bytes_to_int(byte_data[49])
+    atsVgenThresholdState = bytes_to_int(byte_data[50])
+    atsVacThresholdState = bytes_to_int(byte_data[51])
 
     #telemetry
-    atsVacFreq = bytes_to_int(byte_data[14:16], byteorder=BYTE_ORDER)
-    atsVgenFreq = bytes_to_int(byte_data[16:18], byteorder=BYTE_ORDER)
-    atsVloadFreq = bytes_to_int(byte_data[18:20], byteorder=BYTE_ORDER)
-    atsVacP1 = bytes_to_int(byte_data[20:22], byteorder=BYTE_ORDER)
-    atsVacP2 = bytes_to_int(byte_data[22:24], byteorder=BYTE_ORDER)
-    atsVacP3 = bytes_to_int(byte_data[24:26], byteorder=BYTE_ORDER)
-    atsVgenP1 = bytes_to_int(byte_data[26:28], byteorder=BYTE_ORDER)
-    atsVgenP2 = bytes_to_int(byte_data[28:30], byteorder=BYTE_ORDER)
-    atsVgenP3 = bytes_to_int(byte_data[30:32], byteorder=BYTE_ORDER)
-    atsVloadP1 = bytes_to_int(byte_data[32:34], byteorder=BYTE_ORDER)
-    atsVloadP2 = bytes_to_int(byte_data[34:36], byteorder=BYTE_ORDER)
-    atsVloadP3 = bytes_to_int(byte_data[36:38], byteorder=BYTE_ORDER)
-    atsIloadP1 = bytes_to_int(byte_data[38:40], byteorder=BYTE_ORDER)
-    atsIloadP2 = bytes_to_int(byte_data[40:42], byteorder=BYTE_ORDER)
-    atsIloadP3 = bytes_to_int(byte_data[42:44], byteorder=BYTE_ORDER)
-    atsPac1 = bytes_to_int(byte_data[44:46], byteorder=BYTE_ORDER)
-    atsPac2 = bytes_to_int(byte_data[46:48], byteorder=BYTE_ORDER)
-    atsPac3 = bytes_to_int(byte_data[48:50], byteorder=BYTE_ORDER)
+    atsVacFreq = bytes_to_int(byte_data[13:15], byteorder=BYTE_ORDER)
+    atsVgenFreq = bytes_to_int(byte_data[15:17], byteorder=BYTE_ORDER)
+    atsVloadFreq = bytes_to_int(byte_data[17:19], byteorder=BYTE_ORDER)
+    atsVacP1 = bytes_to_int(byte_data[19:21], byteorder=BYTE_ORDER)
+    atsVacP2 = bytes_to_int(byte_data[21:23], byteorder=BYTE_ORDER)
+    atsVacP3 = bytes_to_int(byte_data[23:25], byteorder=BYTE_ORDER)
+    atsVgenP1 = bytes_to_int(byte_data[25:27], byteorder=BYTE_ORDER)
+    atsVgenP2 = bytes_to_int(byte_data[27:29], byteorder=BYTE_ORDER)
+    atsVgenP3 = bytes_to_int(byte_data[29:31], byteorder=BYTE_ORDER)
+    atsVloadP1 = bytes_to_int(byte_data[31:33], byteorder=BYTE_ORDER)
+    atsVloadP2 = bytes_to_int(byte_data[33:35], byteorder=BYTE_ORDER)
+    atsVloadP3 = bytes_to_int(byte_data[35:37], byteorder=BYTE_ORDER)
+    atsIloadP1 = bytes_to_int(byte_data[37:39], byteorder=BYTE_ORDER)
+    atsIloadP2 = bytes_to_int(byte_data[39:41], byteorder=BYTE_ORDER)
+    atsIloadP3 = bytes_to_int(byte_data[41:43], byteorder=BYTE_ORDER)
+    atsPac1 = bytes_to_int(byte_data[43:45], byteorder=BYTE_ORDER)
+    atsPac2 = bytes_to_int(byte_data[45:47], byteorder=BYTE_ORDER)
+    atsPac3 = bytes_to_int(byte_data[47:49], byteorder=BYTE_ORDER)
 
     # telemetry
     _read_telemetry('atsVacFreq', atsVacFreq)
@@ -63,6 +61,8 @@ def extract(byte_data):
     _read_telemetry('atsPac1', atsPac1)
     _read_telemetry('atsPac2', atsPac2)
     _read_telemetry('atsPac3', atsPac3)
+    _read_telemetry('atsVgenThresholdState', atsVgenThresholdState)
+    _read_telemetry('atsVacThresholdState', atsVacThresholdState)
 
 
     #client attributes
@@ -80,7 +80,3 @@ def extract(byte_data):
     _read_attribute('atsErrorState', atsErrorState)
     _read_attribute('atsMode', atsMode)
     _read_attribute('atsConnect', atsConnect)
-
-    # uncomment when update STM32
-    # _read_attribute('atsVgenThresholdState', atsVgenThresholdState)
-    # _read_attribute('atsVacThresholdState', atsVacThresholdState)

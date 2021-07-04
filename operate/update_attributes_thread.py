@@ -17,9 +17,21 @@ def call():
                 for key, value in update_attributes.items():
                     log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
                 LOGGER.info('\n'.join(log_info))
+                save_history_client_attributes(update_attributes)
                 update_attributes.clear()
             update_attributes_lock.release()
         time.sleep(period)
+
+
+def save_history_client_attributes(dct_client_attributes):
+    try:
+        dct_latest_client_attributes = dct_client_attributes
+        json_latest = json.dumps(dct_latest_client_attributes)
+        with io.open('./latest_client_attributes.json', 'wb') as latest_client_attributes_file:
+            latest_client_attributes_file.write(json_latest)
+        LOGGER.info('Latest client attributes just write to file: %s', dct_latest_client_attributes)
+    except Exception as ex:
+        LOGGER.error('Error at save_history_client_attributes function with message: %s', ex.message)
 
 
 def replica_client_attributes():
@@ -53,8 +65,9 @@ def replica_client_attributes():
         "atsVgenThresholdState": 0,
         "atsState": 0,
         "atsErrorState": 0,
-        "atsMode": 0
-    }
+        "atsMode": 0,
+        "atsConnect": 1,
+        }
 
     return attributes
 

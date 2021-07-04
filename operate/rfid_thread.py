@@ -4,9 +4,10 @@ import requests
 
 from config import *
 from config.common import RESPONSE_RFID
+from config.common_api import *
 from monitor import mcc
 
-URL_SEND_LOG ='https://backend.smartsite.dft.vn/api/services/app/DMTram/LogQuetThe'
+url_send_log_rfid = PREFIX + DOMAIN + API_SAVE_LOG_RFID
 KEY_RFID = 'mccRfidCard'
 
 
@@ -50,7 +51,6 @@ def call():
 
 
 def compare_rfid_card(rfid_card, list_card):
-    LOGGER.info('Enter compare_rfid_card function ')
     result = -1
     try:
         set_temp = set(list_card)
@@ -62,17 +62,14 @@ def compare_rfid_card(rfid_card, list_card):
             result = 0
     except Exception as ex:
         LOGGER.error('Error at compare_rfid_card function with message: %s', ex.message)
-    LOGGER.info('Exit compare_rfid_card function')
     return result
 
 
 def write_log(rfid_card, status):
     try:
-        LOGGER.info('Enter write_log function')
         now = round(time.time() * 1000)
         body = {"gatewayId": CLIENT_ID, "rfidCard": rfid_card, "status": status, "createdAt": now}
         LOGGER.info('Content of log: %s', body)
-        LOGGER.info('Exit the function write_log')
         return body
     except Exception as ex:
         LOGGER.info('Error at write_log function with message: %s', ex.message)
@@ -81,14 +78,12 @@ def write_log(rfid_card, status):
 def send_log(log):
     result = False
     try:
-        LOGGER.info('Enter send_log function')
-        response = requests.post(url=URL_SEND_LOG, json=log)
+        response = requests.post(url=url_send_log_rfid, json=log)
         if response.status_code == 200:
             LOGGER.info('Send log request to Smartsite successful!')
             result = True
         else:
             LOGGER.info('Fail while send log request to Smartsite!')
-        LOGGER.info('Exit the function send_log')
         return result
     except Exception as ex:
         LOGGER.info('Error at write_log function with message: %s', ex.message)
