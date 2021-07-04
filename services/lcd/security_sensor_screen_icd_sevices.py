@@ -2,7 +2,6 @@
 from config import *
 from config.common import *
 from config.common_lcd_services import *
-from operate.lcd_thread import create_cmd_multi
 
 
 def default_security_sensor_screen(_telemitries):
@@ -24,7 +23,7 @@ def default_security_sensor_screen(_telemitries):
 
 def chance_security_sensor_screen(_telemitries, _moving_screen):
     try:
-        cmd_lcd[UPDATE_VALUE] = create_cmd_multi("CAM BIEN AN NINH", ROW_1)
+        cmd_lcd[UPDATE_VALUE] = "CAM BIEN AN NINH" + SALT_DOLLAR_SIGN + str(ROW_1) + END_CMD
         if not _moving_screen:
             if _telemitries.get("mccSmokeState") == 1:
                 cmd_lcd[UPDATE_VALUE] = "Khoi: 1" + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
