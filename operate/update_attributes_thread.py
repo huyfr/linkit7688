@@ -7,19 +7,22 @@ def call():
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
         if CLIENT.is_connected():
-            update_attributes_lock.acquire()
-            gw_client_attributes = format_client_attributes(update_attributes)
-            if gw_client_attributes:
-                for key, value in gw_client_attributes.items():
-                    CLIENT.gw_send_attributes(key, value)
-                LOGGER.info('Sent changed client attributes')
-                log_info = []
-                for key, value in update_attributes.items():
-                    log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
-                LOGGER.info('\n'.join(log_info))
-                save_history_client_attributes(update_attributes)
-                update_attributes.clear()
-            update_attributes_lock.release()
+            if len(update_attributes) > 0:
+                update_attributes_lock.acquire()
+                gw_client_attributes = format_client_attributes(update_attributes)
+                if gw_client_attributes:
+                    for key, value in gw_client_attributes.items():
+                        CLIENT.gw_send_attributes(key, value)
+                    LOGGER.info('Sent changed client attributes')
+                    log_info = []
+                    for key, value in update_attributes.items():
+                        log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
+                    LOGGER.info('\n'.join(log_info))
+                    save_history_client_attributes(update_attributes)
+                    update_attributes.clear()
+                update_attributes_lock.release()
+            else:
+                LOGGER.info('Client attributes is empty!!!')
         time.sleep(period)
 
 

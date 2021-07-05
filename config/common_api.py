@@ -1,5 +1,5 @@
-PREFIX = 'http://'
-DOMAIN = '123.30.214.139:8517/'
+PREFIX = 'https://'
+DOMAIN = 'backsend-smartsite.mobifone.vn/'
 API_CHECK_CONNECTION = 'api/services/app/DMTram/GetTrangThaiTuKetNoi'
 API_UPDATE_SHARED_ATTRIBUTES = 'api/services/app/DMTram/ChangeValueTemplate'
 API_GET_STAFF = 'api/services/app/DMNhanVienRaVaoTram/GetNhanVienRaVaoTram'

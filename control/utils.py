@@ -260,6 +260,7 @@ def compose_command_lcd(key_lcd, content):
                 length = len(arr_char) + 3
                 row = int(str_split[1])
                 result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
+                LOGGER.info('String in LCD success: %s', str_content)
                 return result
             elif key_lcd == CLEAR:
                 length = 2

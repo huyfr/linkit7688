@@ -7,21 +7,24 @@ def call():
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
         if CLIENT.is_connected():
-            telemetry = format_telemetry(telemetries)
-            for key, value in telemetry.items():
-                response = CLIENT.gw_send_telemetry(key, value)
-                LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
-                if response.rc() != 0:
-                    CLIENT.disconnect()
-            LOGGER.info('Sent telemetry data')
-            log_info = []
-            for key, value in telemetries.items():
-                log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
-            LOGGER.info('\n'.join(log_info))
-            save_history_telemetry(telemetries)
-            telemetries_lock.acquire()
-            telemetries.clear()
-            telemetries_lock.release()
+            if len(telemetries) > 0:
+                telemetry = format_telemetry(telemetries)
+                for key, value in telemetry.items():
+                    response = CLIENT.gw_send_telemetry(key, value)
+                    LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
+                    if response.rc() != 0:
+                        CLIENT.disconnect()
+                LOGGER.info('Sent telemetry data')
+                log_info = []
+                for key, value in telemetries.items():
+                    log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
+                LOGGER.info('\n'.join(log_info))
+                save_history_telemetry(telemetries)
+                telemetries_lock.acquire()
+                telemetries.clear()
+                telemetries_lock.release()
+            else:
+                LOGGER.info('Telemetry is empty!!!')
         time.sleep(period)
 
 
@@ -96,17 +99,15 @@ def format_telemetry(dict_telemetry):
         if 'mcc' in key:
             telemetry_mcc_1[key] = value
         elif 'ats' in key:
+            telemetry_ats_1[key] = value
             if 'atsVacP1' == key or 'atsVacP2' == key or 'atsVacP3' == key:
                 telemetry_ats_1['atsVacAlarm'] = check_vac_alarm_ats(value)
-            else:
-                telemetry_ats_1[key] = value
         elif 'acm' in key:
+            telemetry_acm_1[key] = value
             if 'acmTempIndoor' == key:
                 telemetry_acm_1['acmTempAlarm'] = check_temp_alarm_acm(value)
             elif 'acmHumidIndoor' == key:
                 telemetry_acm_1['acmHumidAlarm'] = check_humid_alarm_acm(value)
-            else:
-                telemetry_acm_1[key] = value
 
     if telemetry_mcc_1:
         list_telemetry[DEVICE_MCC] = [telemetry_mcc_1]

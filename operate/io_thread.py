@@ -81,6 +81,8 @@ def call():
                             flip -= 1
                         byte_stream = blocking_read(ser, message_break)
                         if byte_stream:
+                            byte_stream_decode_lcd = ':'.join(x.encode('hex') for x in byte_stream)
+                            LOGGER.info('Byte_stream_lcd after decode: %s', byte_stream_decode_lcd)
                             if byte_stream == with_check_sum(control_ack, BYTE_ORDER):
                                 cmd_lcd_lock.acquire()
                                 del cmd_lcd[key_lcd]

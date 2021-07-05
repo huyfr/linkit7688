@@ -22,6 +22,8 @@ url_get_staff = PREFIX + DOMAIN + API_GET_STAFF
 LIST_KEY_EVENT = [EVENT_NONE, EVENT_DOWN, EVENT_UP, EVENT_HOLD, EVENT_POWER]
 LIST_KEY_CODE = [KEYCODE_11, KEYCODE_16, KEYCODE_14, KEYCODE_34, KEYCODE_26, KEYCODE_24, KEYCODE_13, KEYCODE_12]
 json_file = open('config/lcd.json')
+last_trace_lcd = './last_trace_lcd.json'
+last_cmd_alarm = './last_cmd_alarm.json'
 dct_lcd = json.load(json_file)
 dct_lcd_menu = dct_lcd['lcd']['category']['menu']
 dct_lcd_menu_level = dct_lcd_menu['level']
@@ -29,6 +31,7 @@ dct_lcd_menu_level_lv1 = dct_lcd_menu_level['lv1']
 last_alarm_update = Alarm_lcd()
 BAN_TIN_CANH_BAO = 'BAN TIN CANH BAO'
 timeOld = '61'
+time_pre = '61'
 titleOld = ''
 acmTempInOld = ''
 acmTempOutOld = ''
@@ -39,6 +42,7 @@ warningOld = ''
 def call():
     try:
         period = 3
+        int_file_trace()
         while True:
             check_key_code()
             # lcd.menu(button_status[0])
@@ -48,9 +52,11 @@ def call():
 
 
 def check_key_code():
+    global time_pre
     try:
+        next_minute = datetime.now().strftime("%M")
         result_check_input = check_lcd_service(lcd_services)
-        json_file = open('./last_trace_lcd.json', )
+        json_file = open(last_trace_lcd, )
         last_trace = json.load(json_file)
         a = last_trace['key_code']
         b = last_trace['key_event']
@@ -61,6 +67,12 @@ def check_key_code():
             set_last_trace(result_switch_lcd)
             lcd_services.clear()
         elif a > 0 and b > 0:
+            if time_pre != next_minute and a != KEYCODE_11:
+                time_pre = next_minute
+                a = KEYCODE_11
+                b = EVENT_UP
+                last_trace = {'key_event': EVENT_UP, 'key_code': KEYCODE_11}
+                write_to_json(last_trace, last_trace_lcd)
             check_last_display(a, b)
     except Exception as ex:
         LOGGER.error('Error at call function in check_key_code with message: %s', ex.message)
@@ -116,7 +128,7 @@ def get_title_main():
     try:
         if titleOld == '':
             show = 'MAKE IN MOBIFONE' + SALT_DOLLAR_SIGN + str(ROW_1) + END_CMD
-            cmd_lcd[UPDATE_VALUE] = show
+            run_repeat_cmd_lcd(show)
             titleOld = 'MAKE IN MOBIFONE'
             LOGGER.info('MAIN SCREEN TITLE: %s', str(show))
     except Exception as ex:
@@ -398,3 +410,18 @@ def remove_json_file_alarm():
         write_to_json(file_json, './last_cmd_alarm.json')
     except Exception as ex:
         LOGGER.error('Error at remove_json_file_alarm function with message: %s', ex.message)
+
+
+def int_file_trace():
+    try:
+        file = {'key_event': EVENT_UP, 'key_code': KEYCODE_11}
+        write_to_json(file, last_trace_lcd)
+    except Exception as ex:
+        LOGGER.error('Error at remove_json_file_alarm function with message: %s', ex.message)
+
+
+def run_repeat_cmd_lcd(str_cmd):
+    num = 3
+    for x in range(num):
+        cmd_lcd[UPDATE_VALUE] = str_cmd
+        time.sleep(0.25)

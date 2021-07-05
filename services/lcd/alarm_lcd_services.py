@@ -4,12 +4,13 @@ from config.common import *
 from config.common_lcd_services import *
 
 BAN_TIN_CANH_BAO = 'BAN TIN CANH BAO'
-
+last_telemetry = './latest_telemetry.json'
+last_cmd_alarm = './last_cmd_alarm.json'
 
 def check_alarm():
     try:
-        tel_lcd = read_to_json('./latest_telemetry.json')
-        all_row = read_to_json('./last_cmd_alarm.json')
+        tel_lcd = read_to_json(last_telemetry)
+        all_row = read_to_json(last_cmd_alarm)
         row1 = all_row['row1']
         row2 = all_row['row2']
         row3 = all_row['row3']
@@ -25,14 +26,14 @@ def check_alarm():
 
 def save_to_file(str_saved, number):
     try:
-        all_row = read_to_json('./last_cmd_alarm.json')
+        all_row = read_to_json(last_telemetry)
         if number == ROW_1:
             all_row['row1'] = str_saved
         elif number == ROW_2:
             all_row['row2'] = str_saved
         elif number == ROW_3:
             all_row['row3'] = str_saved
-        write_to_json(all_row, './last_cmd_alarm.json')
+        write_to_json(all_row, last_telemetry)
         LOGGER.info('Saved file last_cmd_alarm')
 
     except Exception as ex:
@@ -56,15 +57,16 @@ def get_alarm(row2, row3, tel_lcd):
                 new_list_telemetries = dict(
                     filter(lambda elem: elem[0].lower().find('state') != -1, tel_lcd.items()))
                 check = any(elem != 0 for elem in new_list_telemetries.values())
-                if not check:
+                if not check and row2 != 'An Toan!':
                     row2 = create_for_each('An Toan!')
+                    delete_row3()
                 get_time_alarm(row3, row2)
-            else:
-                row2 = create_for_each(row2)
-                get_time_alarm(row3, row2)
-        else:
-            row2 = create_for_each(row2)
-            get_time_alarm(row3, row2)
+        #     else:
+        #         row2 = create_for_each(row2)
+        #         get_time_alarm(row3, row2)
+        # else:
+        #     row2 = create_for_each(row2)
+        #     get_time_alarm(row3, row2)
     except Exception as ex:
         LOGGER.error('Error at call function in get_alarm with message: %s', ex.message)
 
@@ -73,7 +75,6 @@ def check_detail_alarm(key, row2, text, tel_lcd):
     if tel_lcd.get(key) == 1 and row2 != text:
             return True
     return False
-
 
 
 def get_time_alarm(row3, row2):
@@ -111,9 +112,9 @@ def write_to_json(body, file_url):
         LOGGER.error('Error at write_to_json function with message: %s', ex.message)
 
 
-def read_to_json(fileUrl):
+def read_to_json(file_url):
     try:
-        json_file = open(fileUrl, )
+        json_file = open(file_url, )
         json_info = json.load(json_file)
     except Exception as ex:
         LOGGER.error('Error at call function in read_to_json with message: %s', ex.message)
@@ -123,6 +124,13 @@ def read_to_json(fileUrl):
 def delete_row4():
     try:
         cmd_lcd[UPDATE_VALUE] = '' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+    except Exception as ex:
+        LOGGER.error('Error at call function in delete_row4 with message: %s', ex.message)
+
+
+def delete_row3():
+    try:
+        cmd_lcd[UPDATE_VALUE] = '' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
     except Exception as ex:
         LOGGER.error('Error at call function in delete_row4 with message: %s', ex.message)
 
