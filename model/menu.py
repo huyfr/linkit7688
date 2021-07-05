@@ -49,21 +49,22 @@ class Display:
             LOGGER.error('Error at call function in menu.python with message: %s', ex.message)
 
     def security_sensor_info_display(self):
+        pass
         # USER CODE BEGIN
-        lcd_cmd.clear_display()
-        # lcd_cmd.print_lcd('3. Secure sensor', ROW_1)
-        if telemetries:
-            default_security_sensor_screen(telemetries)
-            while True:
-                if button_status[0] in MENU and button_status[0] != str(MENU[BUTTON_31_EVENT_UP]):
-                    LOGGER.info('Send button value : %s', str(button_status[0]))
-                    self.menu(button_status[0]) # ??????
-                if True: #(check button sang phai):
-                    chance_security_sensor_screen(telemetries, True)
-                if True: #(check button sang trai):
-                    chance_security_sensor_screen(telemetries, False)
-        else:
-            LOGGER.error("model > menu > security_sensor_info_display: can not get telemetries ")
+        # lcd_cmd.clear_display()
+        # # lcd_cmd.print_lcd('3. Secure sensor', ROW_1)
+        #         if telemetries:
+        #     default_security_sensor_screen(telemetries)
+        #     while True:
+        #         if button_status[0] in MENU and button_status[0] != str(MENU[BUTTON_31_EVENT_UP]):
+        #             LOGGER.info('Send button value : %s', str(button_status[0]))
+        #             self.menu(button_status[0]) # ??????
+        #         if True: #(check button sang phai):
+        #             chance_security_sensor_screen(telemetries, True)
+        #         if True: #(check button sang trai):
+        #             chance_security_sensor_screen(telemetries, False)
+        # else:
+        #     LOGGER.error("model > menu > security_sensor_info_display: can not get telemetries ")
             # USER CODE END
 
     def air_info_display(self):
@@ -115,7 +116,7 @@ class Display:
                 time.sleep(3)
         except Exception as ex:
             LOGGER.error('Error at rfid_display function with message: %s', ex.message)
-            fsys.exit(1)
+            sys.exit(1)
 
     def menu(self, number_menu):
         try:
