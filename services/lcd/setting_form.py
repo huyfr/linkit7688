@@ -9,16 +9,28 @@ from config.common_lcd_services import *
 # neu ko co lua chon 3, truyen vao string rong ""
 # _selected_option: number: la lua chon dang duoc chon, co 3 gia tri 1, 2, 3
 def setting_screen_form(_name_of_screen, _selected_option, _option1, _option2, _option3):
-    name_of_screen_line = _name_of_screen + SALT_DOLLAR_SIGN + str(ROW_1) + END_CMD
-    line1 = _option1 + SALT_DOLLAR_SIGN + str(ROW_2) + END_CMD
-    line2 = _option2 + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
-    line3 = _option3 + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+    line1 = _option1
+    line2 = _option2
+    line3 = _option3
 
     if _selected_option == 1:
-        return name_of_screen_line + ">" + line1 + line2 + line3
-    if _selected_option == 2:
-        return name_of_screen_line + line1 + ">" + line2 + line3
-    if _selected_option == 3:
-        return name_of_screen_line + line1 + line2 + ">" + line3
+        line1 = ">" + _option1
+    elif _selected_option == 2:
+        line2 = ">" + _option2
+    elif _selected_option == 3:
+        line3 = ">" + _option3
     else:
         LOGGER.error("services > icd > setting_form.py: _selected_option must be 1, 2 or 3")
+    return {
+        1: [5, _name_of_screen],
+        2: [5, line1],
+        3: [5, line2],
+        4: [5, line3]
+    }
+
+# man hinh xac nhan luu, truyen vao _selected_option: number, gia tri 1, 2
+def accept_screen(_selected_option):
+    if _selected_option == 1 or _selected_option == 2:
+        return setting_screen_form("XAC NHAN LUU", _selected_option, "Co", "Khong", "")
+    else:
+        LOGGER.error("services > icd > accept_screen.py: _selected_option must be 1 or 2")
