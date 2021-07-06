@@ -26,14 +26,14 @@ def check_alarm():
 
 def save_to_file(str_saved, number):
     try:
-        all_row = read_to_json(last_telemetry)
+        all_row = read_to_json(last_cmd_alarm)
         if number == ROW_1:
             all_row['row1'] = str_saved
         elif number == ROW_2:
             all_row['row2'] = str_saved
         elif number == ROW_3:
             all_row['row3'] = str_saved
-        write_to_json(all_row, last_telemetry)
+        write_to_json(all_row, last_cmd_alarm)
         LOGGER.info('Saved file last_cmd_alarm')
 
     except Exception as ex:
@@ -42,7 +42,6 @@ def save_to_file(str_saved, number):
 
 def get_alarm(row2, row3, tel_lcd):
     try:
-        no_have_alarm = True
         if tel_lcd:
             if CB_CHAY in tel_lcd:
                 if tel_lcd.get(CB_CHAY) == 1 and row2 != 'CB Chay!':
@@ -123,14 +122,14 @@ def read_to_json(file_url):
 
 def delete_row4():
     try:
-        cmd_lcd[UPDATE_VALUE] = '' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
+        cmd_lcd[UPDATE_VALUE] = ' ' + SALT_DOLLAR_SIGN + str(ROW_4) + END_CMD
     except Exception as ex:
         LOGGER.error('Error at call function in delete_row4 with message: %s', ex.message)
 
 
 def delete_row3():
     try:
-        cmd_lcd[UPDATE_VALUE] = '' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
+        cmd_lcd[UPDATE_VALUE] = ' ' + SALT_DOLLAR_SIGN + str(ROW_3) + END_CMD
     except Exception as ex:
         LOGGER.error('Error at call function in delete_row4 with message: %s', ex.message)
 

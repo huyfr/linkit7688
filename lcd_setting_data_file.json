@@ -1,0 +1,28 @@
+{
+  "setting_info_title": "",
+  "setting_datetime": {
+    "day": "",
+    "time": ""
+  },
+  "setting_network": {
+    "ip_address": "",
+    "subnet": "",
+    "gateway": "",
+    "pre_dns": "",
+    "alter_dns": ""
+  },
+  "setting_alarm": {
+    "ac_high": 0,
+    "ac_low": 0,
+    "tem_high": 0,
+    "tem_low": 0,
+    "humid_high": 0,
+    "humid_low": 0
+  },
+  "setting_ats": {
+    "auto": 0,
+    "grid_electric": 0,
+    "generator": 0
+  },
+  "setting_rfid_allow": 0
+}

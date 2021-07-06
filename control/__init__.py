@@ -26,11 +26,11 @@ def process_cmd_led(cmd_led):
     return utils._process_cmd_led(cmd_led['length_led'], cmd_led['arr_value'])
 
 
-# def process_cmd_lcd(cmd_lcd):
-#     return utils._process_cmd_lcd(cmd_lcd['row'], cmd_lcd['key_lcd'], cmd_lcd['content'])
+def process_cmd_lcd(cmd_lcd):
+    return utils._process_cmd_lcd(cmd_lcd['key_lcd'], cmd_lcd['content'])
 
-def process_cmd_lcd(row, key_lcd, content):
-    return utils._process_cmd_lcd(row, key_lcd, content)
+# def process_cmd_lcd(row, key_lcd, content):
+#     return utils._process_cmd_lcd(row, key_lcd, content)
 
 
 def process_cmd_sa(cmd_sa):

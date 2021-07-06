@@ -238,47 +238,11 @@ def compose_command_shared_attributes(module_id, value):
         LOGGER.error('Error at compose_command_shared_attributes function with message: %s', ex.message)
     return result
 
-
-# def compose_command_lcd(key_lcd, content):
-#     op_code_lcd = 0X31
-#     try:
-#         # check_str = isinstance(content, str)
-#         convert_str = str(content)
-#         str_align_center_line = convert_str.encode('ascii', 'ignore')
-#         str_split = str_align_center_line.split(SALT_DOLLAR_SIGN)
-#         str_content = str_split[0].center(16, " ")
-#         if str_content:
-#             if key_lcd == UPDATE_VALUE:
-#                 arr_char = [char for char in str_content]
-#                 if len(arr_char) > 16:
-#                     arr_char = [item for index, item in enumerate(arr_char) if index <= 15]
-#                 elif len(arr_char) < 16:
-#                     need_add_space = 16 - len(arr_char)
-#                     postfix = ''.join([char * need_add_space for char in CHAR_SPACE])
-#                     arr_char.extend([char for char in postfix])
-#                 prefix = ''.join([char * len(arr_char) for char in CHAR_S])
-#                 length = len(arr_char) + 3
-#                 row = int(str_split[1])
-#                 result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
-#                 LOGGER.info('String in LCD success: %s', str_content)
-#                 return result
-#             elif key_lcd == CLEAR:
-#                 length = 2
-#                 result = struct.pack('BBBB', 0xA0, length, op_code_lcd, key_lcd)
-#                 return result
-#         else:
-#             str_empty = ''.join([char * 16 for char in CHAR_SPACE])
-#             arr_char = [char for char in str_empty]
-#             prefix = ''.join([char * len(arr_char) for char in CHAR_S])
-#             length = len(arr_char) + 3
-#             row = 3
-#             result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
-#             return result
-#     except Exception as ex:
-#         LOGGER.error('Error at compose_command_lcd function with message: %s', ex.message)
-
-def compose_command_lcd(row, key_lcd, content):
+# old
+def compose_command_lcd(key_lcd, content):
+    op_code_lcd = 0X31
     try:
+        # check_str = isinstance(content, str)
         convert_str = str(content)
         str_align_center_line = convert_str.encode('ascii', 'ignore')
         str_split = str_align_center_line.split(SALT_DOLLAR_SIGN)
@@ -294,12 +258,13 @@ def compose_command_lcd(row, key_lcd, content):
                     arr_char.extend([char for char in postfix])
                 prefix = ''.join([char * len(arr_char) for char in CHAR_S])
                 length = len(arr_char) + 3
-                result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, OP_CODE_SEND_LCD, key_lcd, row, *arr_char)
+                row = int(str_split[1])
+                result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
                 LOGGER.info('String in LCD success: %s', str_content)
                 return result
             elif key_lcd == CLEAR:
                 length = 2
-                result = struct.pack('BBBB', 0xA0, length, OP_CODE_SEND_LCD, key_lcd)
+                result = struct.pack('BBBB', 0xA0, length, op_code_lcd, key_lcd)
                 return result
         else:
             str_empty = ''.join([char * 16 for char in CHAR_SPACE])
@@ -307,10 +272,47 @@ def compose_command_lcd(row, key_lcd, content):
             prefix = ''.join([char * len(arr_char) for char in CHAR_S])
             length = len(arr_char) + 3
             row = 3
-            result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, OP_CODE_SEND_LCD, key_lcd, row, *arr_char)
+            result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, op_code_lcd, key_lcd, row, *arr_char)
             return result
     except Exception as ex:
         LOGGER.error('Error at compose_command_lcd function with message: %s', ex.message)
+
+
+# new
+# def compose_command_lcd(row, key_lcd, content):
+#     try:
+#         convert_str = str(content)
+#         str_align_center_line = convert_str.encode('ascii', 'ignore')
+#         str_split = str_align_center_line.split(SALT_DOLLAR_SIGN)
+#         str_content = str_split[0].center(16, " ")
+#         if str_content:
+#             if key_lcd == UPDATE_VALUE:
+#                 arr_char = [char for char in str_content]
+#                 if len(arr_char) > 16:
+#                     arr_char = [item for index, item in enumerate(arr_char) if index <= 15]
+#                 elif len(arr_char) < 16:
+#                     need_add_space = 16 - len(arr_char)
+#                     postfix = ''.join([char * need_add_space for char in CHAR_SPACE])
+#                     arr_char.extend([char for char in postfix])
+#                 prefix = ''.join([char * len(arr_char) for char in CHAR_S])
+#                 length = len(arr_char) + 3
+#                 result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, OP_CODE_SEND_LCD, key_lcd, row, *arr_char)
+#                 LOGGER.info('String in LCD success: %s', str_content)
+#                 return result
+#             elif key_lcd == CLEAR:
+#                 length = 2
+#                 result = struct.pack('BBBB', 0xA0, length, OP_CODE_SEND_LCD, key_lcd)
+#                 return result
+#         else:
+#             str_empty = ''.join([char * 16 for char in CHAR_SPACE])
+#             arr_char = [char for char in str_empty]
+#             prefix = ''.join([char * len(arr_char) for char in CHAR_S])
+#             length = len(arr_char) + 3
+#             row = 3
+#             result = struct.pack(FORMAT_LCD + prefix, 0xA0, length, OP_CODE_SEND_LCD, key_lcd, row, *arr_char)
+#             return result
+#     except Exception as ex:
+#         LOGGER.error('Error at compose_command_lcd function with message: %s', ex.message)
 
 
 def _process_cmd_led(length_led, arr_value):
@@ -327,9 +329,19 @@ def _process_cmd_led(length_led, arr_value):
         LOGGER.error('Error at _process_cmd_led function with message: %s', ex.message)
 
 
-def _process_cmd_lcd(row, key_lcd, content):
+# def _process_cmd_lcd(row, key_lcd, content):
+#     try:
+#         result = compose_command_lcd(row, key_lcd, content)
+#         result_encode = ':'.join(x.encode('hex') for x in result)
+#         LOGGER.debug('Process lcd command: key_lcd: %s, content: %s, after decode is: %s', key_lcd, content, result_encode)
+#         return result
+#     except Exception as ex:
+#         LOGGER.error('Error at _process_cmd_lcd function with message: %s', ex.message)
+
+
+def _process_cmd_lcd(key_lcd, content):
     try:
-        result = compose_command_lcd(row, key_lcd, content)
+        result = compose_command_lcd(key_lcd, content)
         result_encode = ':'.join(x.encode('hex') for x in result)
         LOGGER.debug('Process lcd command: key_lcd: %s, content: %s, after decode is: %s', key_lcd, content, result_encode)
         return result
