@@ -141,11 +141,12 @@ def get_temp_tram():
     global warningOld
     try:
         warning = ''
-        tel = read_to_json('./latest_telemetry.json')
+        # tel = read_to_json('./latest_telemetry.json')
+        tel = telemetries
         acmTempIn = tel.get('acmTempIndoor')
         acmTempOut = tel.get('acmTempOutdoor')
         acmHumidIn = tel.get('acmHumidIndoor')
-        new_list = dict(filter(lambda elem: elem[0].lower().find('state') != -1, tel.items()))
+        new_list = dict(filter(lambda elem: elem[0].lower().find('state') != -1, dct_alarm.items()))
         if len(new_list) > 0:
             check = any(elem != 0 for elem in new_list.values())
             warning = '!!!' if check else ''
@@ -166,7 +167,8 @@ def get_temp_tram():
 
 def get_user_tram():
     try:
-        rfid = read_to_json('./latest_client_attributes.json')
+        # rfid = read_to_json('./latest_client_attributes.json')
+        rfid = client_attributes
         if KEY_RFID in rfid:
             rfid_card = rfid.get(KEY_RFID)
             staffCode = rfid_card

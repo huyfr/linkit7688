@@ -7,9 +7,10 @@ BAN_TIN_CANH_BAO = 'BAN TIN CANH BAO'
 last_telemetry = './latest_telemetry.json'
 last_cmd_alarm = './last_cmd_alarm.json'
 
+
 def check_alarm():
     try:
-        tel_lcd = read_to_json(last_telemetry)
+        # tel_lcd = read_to_json(last_telemetry)
         all_row = read_to_json(last_cmd_alarm)
         row1 = all_row['row1']
         row2 = all_row['row2']
@@ -19,7 +20,7 @@ def check_alarm():
             row1 = BAN_TIN_CANH_BAO
             LOGGER.info('Log in row 1 success: %s', row1)
             save_to_file(row1, ROW_1)
-        get_alarm(row2, row3, tel_lcd)
+        get_alarm(row2, row3, telemetries)
     except Exception as ex:
         LOGGER.error('Error at call function in check_alarm with message: %s', ex.message)
 

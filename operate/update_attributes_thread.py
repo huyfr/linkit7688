@@ -18,8 +18,7 @@ def call():
                     for key, value in update_attributes.items():
                         log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
                     LOGGER.info('\n'.join(log_info))
-                    save_history_client_attributes(update_attributes)
-                    update_attributes.clear()
+                LOGGER.info('Dictionary update client attributes: %s', update_attributes)
                 update_attributes_lock.release()
             else:
                 LOGGER.info('Client attributes is empty!!!')

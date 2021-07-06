@@ -1,6 +1,7 @@
 import time
 
 from config import *
+from control.utils import set_alarm_state_to_dct
 
 
 def call():
@@ -19,10 +20,8 @@ def call():
                 for key, value in telemetries.items():
                     log_info.append('\t{:>20s}: {:>20s}'.format(str(key), str(value)))
                 LOGGER.info('\n'.join(log_info))
-                save_history_telemetry(telemetries)
-                telemetries_lock.acquire()
-                telemetries.clear()
-                telemetries_lock.release()
+                LOGGER.info('Dictionary telemetries: %s', telemetries)
+                set_alarm_state_to_dct(telemetries)
             else:
                 LOGGER.info('Telemetry is empty!!!')
         time.sleep(period)

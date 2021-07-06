@@ -63,6 +63,10 @@ def extract(byte_data):
     _read_telemetry('atsPac3', atsPac3)
     _read_telemetry('atsVgenThresholdState', atsVgenThresholdState)
     _read_telemetry('atsVacThresholdState', atsVacThresholdState)
+    _read_telemetry('atsContactorElecState', atsContactorElecState)
+    _read_telemetry('atsContactorGenState', atsContactorGenState)
+    _read_telemetry('atsAcState', atsAcState)
+    _read_telemetry('atsGenState', atsGenState)
 
 
     #client attributes
@@ -72,10 +76,6 @@ def extract(byte_data):
     _read_attribute('atsVgenP1State', atsVgenP1State)
     _read_attribute('atsVgenP2State', atsVgenP2State)
     _read_attribute('atsVgenP3State', atsVgenP3State)
-    _read_attribute('atsContactorElecState', atsContactorElecState)
-    _read_attribute('atsContactorGenState', atsContactorGenState)
-    _read_attribute('atsAcState', atsAcState)
-    _read_attribute('atsGenState', atsGenState)
     _read_attribute('atsState', atsState)
     _read_attribute('atsErrorState', atsErrorState)
     _read_attribute('atsMode', atsMode)

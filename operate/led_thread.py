@@ -26,7 +26,7 @@ def get_led_value():
         dct_led[LED_1] = 0
         dct_led[LED_2] = 0
         dct_led[LED_NONE] = 0
-        dct_led[LED_ALARM] = get_sate_led_alarm(telemetries)
+        dct_led[LED_ALARM] = get_sate_led_alarm(dct_alarm)
         dct_led[LED_3G] = 1  # TODO: need function check
         dct_led[LED_ETHERNET] = 1  # TODO: need function check
         dct_led[LED_CRMU] = client_attributes['mccRfidConnectState']

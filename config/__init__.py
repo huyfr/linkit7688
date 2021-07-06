@@ -37,6 +37,7 @@ cmd_led = {}
 cmd_lcd = {}
 cmd_sa = {}
 dict_cmd = {}
+dct_alarm = {}
 
 button_status = [0]
 
