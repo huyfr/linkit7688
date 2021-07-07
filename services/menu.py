@@ -3,6 +3,7 @@ from config.common import *
 from config.common_lcd_services import *
 from services.lcd import main_screen_lcd_services
 from services.lcd.alarm_lcd_services import check_alarm
+from services.lcd.security_sensor_screen_icd_sevices import *
 
 ROW = [ROW_1, ROW_2, ROW_3, ROW_4]
 section_lv_1 = -1
@@ -86,17 +87,9 @@ def security_sensor_info_display():
         section_lv_2 = 1
 
     if section_lv_2 == 0:
-        print_lcd('CAM BIEN AN NINH',
-                  'Khoi: 0',
-                  'Chay: 0',
-                  'Ngap nuoc: 0')
-        # goi ham hien thi
+        security_sensor_screen_1(telemetries)
     if section_lv_2 == 1:
-        print_lcd('CAM BIEN AN NINH',
-                  'Ngap nuoc: 0',
-                  'Cua: 0',
-                  'chuyen dong: 1')
-        # goi ham hien thi
+        security_sensor_screen_2(telemetries)
     LOGGER.info('Enter security_sensor_info_display function')
     LOGGER.info('section_lv_2: %s', str(section_lv_2))
 

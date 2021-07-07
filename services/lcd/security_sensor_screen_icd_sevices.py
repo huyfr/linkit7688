@@ -1,45 +1,41 @@
 # TRUONG
 from config import *
+from config.common import UPDATE_VALUE
+from config.common_lcd_services import *
+from control import process_cmd_lcd
 
 
-# cmd_lcd = {1: [5, 'a'], 2: [5, 'b'], 3: [5, 'c'], 4: [5, 'd']}
 # man hinh mac dinh
 def security_sensor_screen_1(_telemitries):
     try:
-        mccSmokeState = ''
-        mccFireState = ''
-        mccFloodState = ''
+        mcc_smoke_tate = ''
+        mcc_fire_state = ''
+        mcc_flood_state = ''
 
+        # thay doi cac state neu co trong telemetries, neu khong se dung mac dinh la ''
         if "mccSmokeState" in _telemitries.keys():
-            mccSmokeState = _telemitries.get("mccSmokeState")
+            mcc_smoke_tate = _telemitries.get("mccSmokeState")
         else:
             LOGGER.error(
                 "operate > icd_thread > security_sensor_screen_1: key 'mccSmokeState' is not in Telemetries")
 
         if "mccFireState" in _telemitries.keys():
-            mccFireState = _telemitries.get("mccFireState")
+            mcc_fire_state = _telemitries.get("mccFireState")
         else:
             LOGGER.error(
                 "operate > icd_thread > security_sensor_screen_1: key 'mccFireState' is not in Telemetries")
 
         if "mccFloodState" in _telemitries.keys():
-            mccFloodState = _telemitries.get("mccFloodState")
+            mcc_flood_state = _telemitries.get("mccFloodState")
         else:
             LOGGER.error(
                 "operate > icd_thread > security_sensor_screen_1: key 'mccFloodState' is not in Telemetries")
 
-            # tao String mac dinh in ra man hinh
-        screen_name = "CAM BIEN AN NINH"
-        smoke_state = "Khoi: " + str(mccSmokeState)
-        fire_state = "Chay: " + str(mccFireState)
-        flood_state = "Ngap nuoc: " + str(mccFloodState)
-
-        return {
-            1: [5, screen_name],
-            2: [5, smoke_state],
-            3: [5, fire_state],
-            4: [5, flood_state]
-        }
+        # In ra man hinh
+        process_cmd_lcd(ROW_1, UPDATE_VALUE, "CAM BIEN AN NINH")
+        process_cmd_lcd(ROW_2, UPDATE_VALUE, "Khoi: " + str(mcc_smoke_tate))
+        process_cmd_lcd(ROW_3, UPDATE_VALUE, "Chay: " + str(mcc_fire_state))
+        process_cmd_lcd(ROW_4, UPDATE_VALUE, "Ngap nuoc: " + str(mcc_flood_state))
 
     except Exception as ex:
         LOGGER.error('operate > icd_thread > default_security_sensor_screen: %s', ex.message)
@@ -47,39 +43,33 @@ def security_sensor_screen_1(_telemitries):
 
 def security_sensor_screen_2(_telemitries):
     try:
-        mccFloodState = ''
-        mccDoorButton = ''
-        mccMoveState = ''
+        mcc_flood_state = ''
+        mcc_door_button = ''
+        mcc_move_state = ''
 
         # tao String mac dinh in ra man hinh
         if "mccFloodState" in _telemitries.keys():
-            mccFloodState = _telemitries.get("mccFloodState")
+            mcc_flood_state = _telemitries.get("mccFloodState")
         else:
             LOGGER.error(
                 "operate > icd_thread > security_sensor_screen_2: key 'mccFloodState' is not in Telemetries")
 
         if "mccDoorButton" in _telemitries.keys():
-            mccDoorButton = _telemitries.get("mccDoorButton")
+            mcc_door_button = _telemitries.get("mccDoorButton")
         else:
             LOGGER.error(
                 "operate > icd_thread > security_sensor_screen_2: key 'mccDoorButton' is not in Telemetries")
 
         if "mccMoveState" in _telemitries.keys():
-            mccMoveState = _telemitries.get("mccMoveState")
+            mcc_move_state = _telemitries.get("mccMoveState")
         else:
             LOGGER.error(
                 "operate > icd_thread > security_sensor_screen_2: key 'mccMoveState' is not in Telemetries")
 
-        screen_name = "CAM BIEN AN NINH"
-        flood_state = "Ngap nuoc: " + str(mccFloodState)
-        door_state = "Cua: " + str(mccDoorButton)
-        moving_state = "Chuyen dong: " + str(mccMoveState)
-
-        return {
-            1: [5, screen_name],
-            2: [5, flood_state],
-            3: [5, door_state],
-            4: [5, moving_state]
-        }
+        # In ra man hinh
+        process_cmd_lcd(ROW_1, UPDATE_VALUE, "CAM BIEN AN NINH")
+        process_cmd_lcd(ROW_2, UPDATE_VALUE, "Ngap: " + str(mcc_flood_state))
+        process_cmd_lcd(ROW_3, UPDATE_VALUE, "Cua: " + str(mcc_door_button))
+        process_cmd_lcd(ROW_4, UPDATE_VALUE, "Chuyen dong: " + str(mcc_move_state))
     except Exception as ex:
         LOGGER.error('operate > icd_thread > chance_security_sensor_screen: %s', ex.message)
