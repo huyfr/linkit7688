@@ -49,34 +49,33 @@ def get_alarm(row2, row3, tel_lcd):
     try:
         check_card = check_rfid()
         if tel_lcd:
-            if CB_CHAY in tel_lcd:
-                if tel_lcd.get(CB_CHAY) == 1 and row2 != 'CB Chay!':
-                    row2 = create_for_each('CB Chay!')
-                elif tel_lcd.get(CB_KHOI) == 1 and row2 != 'CB Khoi!':
-                    row2 = create_for_each('CB Khoi!')
-                elif tel_lcd.get(CB_NGAP) == 1 and row2 != 'CB Ngap!':
-                    row2 = create_for_each('CB Ngap!')
-                elif tel_lcd.get(CB_NHIET) != 0 and row2 != 'CB Nhiet Do!':
-                    row2 = create_for_each('CB Nhiet Do!')
-                elif tel_lcd.get(CB_DOAM) != 0 and row2 != 'CB Do Am!':
-                    row2 = create_for_each('CB Do Am!')
-                elif tel_lcd.get(CB_DIENAPLUOI) == 1 and row2 != 'CB Dien Luoi!':
-                    row2 = create_for_each('CB AC!')
-                elif tel_lcd.get(CB_DIENMAYPHAT) == 1 and row2 != 'CB Dien M.Phat!':
-                    row2 = create_for_each('CB Dien M.Phat!')
-                elif tel_lcd.get(CB_CUA) == 1 and row2 != 'CB Cua!':
-                    row2 = create_for_each('CB Cua!')
-                elif check_card and row2 != 'CB RFID!':
-                    row2 = create_for_each('CB RFID!')
+            if tel_lcd.get(CB_CHAY) == 1 and row2 != 'CB Chay!':
+                row2 = create_for_each('CB Chay!')
+            elif tel_lcd.get(CB_KHOI) == 1 and row2 != 'CB Khoi!':
+                row2 = create_for_each('CB Khoi!')
+            elif tel_lcd.get(CB_NGAP) == 1 and row2 != 'CB Ngap Nuoc!':
+                row2 = create_for_each('CB Ngap Nuoc!')
+            elif CB_NHIET in tel_lcd and tel_lcd.get(CB_NHIET) != 0 and row2 != 'CB Nhiet Do!':
+                row2 = create_for_each('CB Nhiet Do!')
+            elif CB_DOAM in tel_lcd and tel_lcd.get(CB_DOAM) != 0 and row2 != 'CB Do Am!':
+                row2 = create_for_each('CB Do Am!')
+            elif CB_DIENAPLUOI in tel_lcd and tel_lcd.get(CB_DIENAPLUOI) == 1 and row2 != 'CB Dien Luoi!':
+                row2 = create_for_each('CB Dien Luoi!')
+            elif CB_DIENMAYPHAT in tel_lcd and tel_lcd.get(CB_DIENMAYPHAT) == 1 and row2 != 'CB Dien M.Phat!':
+                row2 = create_for_each('CB Dien M.Phat!')
+            elif tel_lcd.get(CB_CUA) == 1 and row2 != 'CB Cua!':
+                row2 = create_for_each('CB Cua!')
+            elif check_card and row2 != 'CB Quet The!':
+                row2 = create_for_each('CB Quet The!!')
 
-                check = False
-                new_list = dict(filter(lambda elem: elem[0].lower().find('state') != -1, dct_alarm.items()))
-                if len(new_list) > 0:
-                    check = any(elem != 0 for elem in new_list.values())
-                if not check and check_card and row2 != 'An Toan!':
-                    row2 = create_for_each('An Toan!')
-                    delete_row(ROW_3)
-                get_time_alarm(row3, row2)
+            check = False
+            new_list = dict(filter(lambda elem: elem[0].lower().find('state') != -1, dct_alarm.items()))
+            if len(new_list) > 0:
+                check = any(elem != 0 for elem in new_list.values())
+            if not check and check_card and row2 != 'An Toan!':
+                row2 = create_for_each('An Toan!')
+                delete_row(ROW_3)
+            get_time_alarm(row3, row2)
         #     else:
         #         row2 = create_for_each(row2)
         #         get_time_alarm(row3, row2)

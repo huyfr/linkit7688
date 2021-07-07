@@ -28,8 +28,8 @@ def check_check_sum(byte_stream, byteorder):
 
 
 def blocking_read(ser, message_break):
-    initial_break = message_break
-    continuous_break = message_break / 10
+    initial_break = message_break / 10
+    continuous_break = message_break / 100
     result = b''
     time.sleep(initial_break)
     while True:

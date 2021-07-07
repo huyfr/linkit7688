@@ -71,23 +71,22 @@ def parse_ats_command_to_number(command):
 # shared attributes ATS
 def parse_ats_shared_attributes_to_number(key):
     switcher_ats = {
-        'atsVacMaxThreshold': 1,
-        'atsVacMinThreshold': 2,
-        'atsVgenMaxThreshold': 3,
+        'atsGenInactiveStartTime': 1,
+        'atsVacMaxThreshold': 2,
+        'atsGenAutoResetTimeout': 3,
         'atsVgenMinThreshold': 4,
-        'atsVacStabilizeTimeout': 5,
-        'atsVgenIdleCoolingTimeout': 6,
-        'atsVgenIdleWarmUpTimeout': 7,
-        'atsGenInactiveStartTime': 8,
-        'atsGenInactiveEndTime': 9,
-        'atsGenActiveDuration': 10,
-        'atsGenAutoResetMode': 11,
-        'atsGenAutoResetTimeout': 12,
-        'atsGenAutoResetMax': 13,
-        'atsGenDeactivateMode': 14,
-        'atsControlAuto': 15
+        'atsVacMinThreshold': 5,
+        'atsGenAutoResetMode': 6,
+        'atsGenInactiveEndTime': 7,
+        'atsGenAutoResetMax': 8,
+        'atsGenDeactivateMode': 9,
+        'atsVgenMaxThreshold': 10,
+        'atsVgenIdleCoolingTimeout': 11,
+        'atsVgenIdleWarmUpTimeout': 12,
+        'atsVacStabilizeTimeout': 13,
+        'atsGenActiveDuration': 14
     }
-    return switcher_ats.get(key, "Out of range!")
+    return switcher_ats.get(key, -1)
 
 
 # shared attributes MCC
@@ -98,7 +97,7 @@ def parse_mcc_shared_attributes_to_number(key):
         'mccPeriodUpdate': 3,
         'mccDcMinThreshold': 4
     }
-    return switcher_mcc.get(key, "Out of range!")
+    return switcher_mcc.get(key, -1)
 
 
 # shared attributes ACM
@@ -121,5 +120,5 @@ def parse_acm_shared_attributes_to_number(key):
         'acmT3Temp': 15,
         'acmT4Temp': 16
     }
-    return switcher_acm.get(key, "Out of range!")
+    return switcher_acm.get(key, -1)
 

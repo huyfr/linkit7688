@@ -2,11 +2,14 @@ from config import *
 from config.common import *
 from config.common_lcd_services import *
 from services.lcd import main_screen_lcd_services
+from services.lcd.acm_sreen_lcd_services import show_temp_condition
 from services.lcd.alarm_lcd_services import check_alarm
-from services.lcd.security_sensor_screen_icd_sevices import *
+from services.lcd import ats_screen_lcd_services
+from services.lcd import rfid_screen_lcd_sevices
+from services.lcd.sensor_screen_lcd_services import *
 
 ROW = [ROW_1, ROW_2, ROW_3, ROW_4]
-section_lv_1 = -1
+section_lv_1 = 0
 section_lv_2 = 0
 section_lv_3 = -1
 section_lv_4 = -1
@@ -14,7 +17,6 @@ section_lv_5 = -1
 
 button = 0
 set_string_ok = 0
-
 
 def print_lcd(str1, str2, str3, str4):
     from control import process_cmd_lcd
@@ -53,7 +55,7 @@ def select_section_lv1():
             5: setting_display,
             6: rfid_display
         }
-        LOGGER.info('Send message select_section_lv1 on lcd, section_lv_1: %s', section_lv_1)
+        LOGGER.info('Send message select_section_lv1 on lcd, section_lv_1: %s', str(section_lv_1))
         func = switcher.get(section_lv_1)
         return func()
     except Exception as ex:
@@ -61,22 +63,12 @@ def select_section_lv1():
 
 
 def main_display():
-    # goi ham hien thi
-    # print_lcd('MAKE IN MOBIFONE',
-    #           'TIME',
-    #           'VALUE',
-    #           'ID')
-    # LOGGER.info('Enter main_display function')
     main_screen_lcd_services.screen_main()
 
+
 def warning_display():
-    # print_lcd('BAN TIN CANH BAO',
-    #           'Ten canh bao',
-    #           'Thoi gian',
-    #           '')
-    # # goi ham hien thi
-    # LOGGER.info('Enter warning_display function')
     check_alarm()
+
 
 def security_sensor_info_display():
     global section_lv_2
@@ -95,42 +87,51 @@ def security_sensor_info_display():
 
 
 def air_info_display():
-    print_lcd('BAN TIN DIEU HOA',
-              'DH1: bat, HD2:Tat',
-              'Quat:Bat',
-              'Che do: Auto')
-    # goi ham hien thi
-    LOGGER.info('Enter air_info_display function')
+    # print_lcd('BAN TIN DIEU HOA',
+    #           'DH1: bat, HD2:Tat',
+    #           'Quat:Bat',
+    #           'Che do: Auto')
+    # # goi ham hien thi
+    show_temp_condition(telemetries)
+    # LOGGER.info('Enter air_info_display function')
     # LOGGER.info('section_lv_2: %s', str(section_lv_2))
+
 
 def ats_display():
     global section_lv_2
 
     if button == LEFT:
-        section_lv_2 = 0
+        section_lv_2 += 1
     elif button == RIGHT:
-        section_lv_2 = 1
+        section_lv_2 -= 1
+    if section_lv_2 > 5:
+        section_lv_2 = 5
+    elif section_lv_2 < 0:
+        section_lv_2 = 0
+
     if section_lv_2 == 0:
-        print_lcd('THONG TIN ATS',
-                  'Ket noi',
-                  'Nguon: Dien luoi',
-                  '')
-        # goi ham hien thi
+        ats_screen_lcd_services.get_screen_ats()
+        LOGGER.info('ATS DISPLAY')
     elif section_lv_2 == 1:
-        print_lcd('THONG TIN ATS',
-                  '220V 220V 220V',
-                  '220V 220V 220V',
-                  '3.0A 4.0A 4.6A')
-        # goi ham hien thi
-    LOGGER.info('Enter ats_display function')
-    LOGGER.info('section_lv_2: %s', str(section_lv_2))
+        ats_screen_lcd_services.get_detail_screen1_ats()
+        LOGGER.info('ATS DISPLAY DETAIL1')
+    elif section_lv_2 == 2:
+        ats_screen_lcd_services.get_detail_screen2_ats()
+        LOGGER.info('ATS DISPLAY DETAIL2')
+    elif section_lv_2 == 3:
+        ats_screen_lcd_services.get_detail_screen3_ats()
+        LOGGER.info('ATS DISPLAY DETAIL3')
+    elif section_lv_2 == 4:
+        ats_screen_lcd_services.get_detail_screen4_ats()
+        LOGGER.info('ATS DISPLAY DETAIL4')
+    elif section_lv_2 == 5:
+        ats_screen_lcd_services.get_detail_screen5_ats()
+        LOGGER.info('ATS DISPLAY DETAIL5')
+
 
 def rfid_display():
-    print_lcd('THONG TIN RFID',
-              'Ket noi',
-              'Ngay gio',
-              'ma the')
-    LOGGER.info('Enter rfid_display function')
+    rfid_screen_lcd_sevices.get_screen_rfid()
+    LOGGER.info('RFID DISPLAY')
 
 
 def setting_display():
@@ -246,6 +247,7 @@ def thoi_gian():
     LOGGER.info('Finish thoi_gian function')
     LOGGER.info('section_lv_3: %s', str(section_lv_3))
 
+
 def thong_so_mang():
     global section_lv_3
     global section_lv_4
@@ -313,6 +315,7 @@ def thong_so_mang():
                       '')
     LOGGER.info('section_lv_3: %s', str(section_lv_3))
 
+
 def canh_bao():
     global section_lv_3
     global section_lv_4
@@ -348,6 +351,7 @@ def canh_bao():
                       '> Nguong AC thap',
                       '')
     LOGGER.info('section_lv_3: %s', str(section_lv_3))
+
 
 def thiet_bi_ats():
     global section_lv_3
@@ -398,6 +402,7 @@ def thiet_bi_ats():
                       '> May phat')
     LOGGER.info('section_lv_3: %s', str(section_lv_3))
 
+
 def thiet_bi_rfid():
     global section_lv_3
     global section_lv_4
@@ -433,14 +438,13 @@ def thiet_bi_rfid():
                       '')
     LOGGER.info('section_lv_3: %s', str(section_lv_3))
 
+
 def main_menu(bt):
     global section_lv_1, section_lv_2, section_lv_3, section_lv_4, section_lv_5, button
-    button = bt
-
     LOGGER.info('Enter main_menu function')
     try:
-        if section_lv_1 == -1:
-            main_display()
+        if bt != -1:
+            button = bt
 
         if button in MENU_LV_1 and button != section_lv_1 or section_lv_5 == 1:
             section_lv_2 = 0

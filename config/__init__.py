@@ -19,7 +19,6 @@ DEVICE_ATS = device_config['ats']
 CLIENT = mqtt.TBGatewayMqttClient(host=HOST, port=8001, token=ACCESS_TOKEN)
 IO_PORT = '/dev/ttyS0'
 # IO_PORT = 'COM3'
-# IO_PORT = 'COM4'
 BAUDRATE = 115200
 # uncomment when test auto update firmware
 UPDATE_PERIOD = 600
@@ -38,7 +37,6 @@ cmd_lcd = {}
 cmd_sa = {}
 dict_cmd = {}
 dct_alarm = {}
-
 
 update_attributes_lock = threading.Lock()
 telemetries_lock = threading.Lock()

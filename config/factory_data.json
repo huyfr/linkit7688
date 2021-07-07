@@ -15,8 +15,6 @@
     "acmRestTime": 0.1,
     "acmGenAllow": 0,
     "acmVacThreshold": 180,
-    "acmMinTemp": 16,
-    "acmMaxTemp": 60,
     "acmMinHumid": 10,
     "acmMaxHumid": 200,
     "acmExpectedTemp": 25,

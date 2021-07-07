@@ -28,6 +28,7 @@ def call():
         if not (current_cycle - original_cycle) and not (current_cycle - original_cycle) % 2:
             LOGGER.info("Send clock set")
             clock.set()
+
         # Read data
         byte_stream = blocking_read(ser, message_break)
         if byte_stream and _read_data(byte_stream):

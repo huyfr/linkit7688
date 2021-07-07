@@ -10,7 +10,6 @@ list_dict_ats = []
 list_dict_acm = []
 list_dict_mcc = []
 
-
 def call():
     try:
         period = 60
@@ -19,24 +18,26 @@ def call():
                 for key, value in shared_attributes.items():
                     response_classify_sa = classify_shared_attributes(key, value)
                     if len(response_classify_sa) > 0:
-                        classify_dict(response_classify_sa)
+                        if response_classify_sa[ID_SHARED_ATTRIBUTES] > 0:
+                            classify_dict(response_classify_sa)
                 response_sorted = sort_list_dict(list_dict_mcc, list_dict_acm, list_dict_ats)
                 if len(response_sorted) > 0:
                     LOGGER.info('Sort the list successful')
                     for current_list in response_sorted:
                         current_list_value = get_array_value(current_list)
-                        type = current_list[0][TYPE]
                         if len(current_list_value) > 0:
-                            cmd_sa_lock.acquire()
-                            if type is MCC:
-                                cmd_sa[ID_MCC] = current_list_value
-                            elif type is ACM:
-                                cmd_sa[ID_ACM] = current_list_value
-                            elif type is ATS:
-                                cmd_sa[ID_ATS] = current_list_value
-                            cmd_sa_lock.release()
-                        else:
-                            LOGGER.info('Get value of array failed')
+                            type = current_list[0][TYPE]
+                            if len(current_list_value) > 0:
+                                cmd_sa_lock.acquire()
+                                if type is MCC:
+                                    cmd_sa[ID_MCC] = current_list_value
+                                elif type is ACM:
+                                    cmd_sa[ID_ACM] = current_list_value
+                                elif type is ATS:
+                                    cmd_sa[ID_ATS] = current_list_value
+                                cmd_sa_lock.release()
+                            else:
+                                LOGGER.info('Get value of array failed')
                     response_clear_list = clear_all_list(list_dict_mcc, list_dict_acm, list_dict_ats)
                 else:
                     LOGGER.info('Sort the list failed')
@@ -52,20 +53,14 @@ def classify_shared_attributes(key, value):
             number = parse_ats_shared_attributes_to_number(key)
             if isinstance(number, int):
                 formatted = {TYPE: 'ats', ID_SHARED_ATTRIBUTES: number, VALUE: value}
-            else:
-                formatted = {}
         elif 'mcc' in key:
             number = parse_mcc_shared_attributes_to_number(key)
             if isinstance(number, int):
                 formatted = {TYPE: 'mcc', ID_SHARED_ATTRIBUTES: number, VALUE: value}
-            else:
-                formatted = {}
         elif 'acm' in key:
             number = parse_acm_shared_attributes_to_number(key)
             if isinstance(number, int):
                 formatted = {TYPE: 'acm', ID_SHARED_ATTRIBUTES: number, VALUE: value}
-            else:
-                formatted = {}
     except Exception as ex:
         LOGGER.error('Error at classify_shared_attributes function with message: %s', ex.message)
     return formatted
