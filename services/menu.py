@@ -8,6 +8,7 @@ from services.lcd import ats_screen_lcd_services
 from services.lcd import rfid_screen_lcd_sevices
 from services.lcd.sensor_screen_lcd_services import *
 
+
 ROW = [ROW_1, ROW_2, ROW_3, ROW_4]
 section_lv_1 = 0
 section_lv_2 = 0
