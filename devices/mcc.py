@@ -35,7 +35,7 @@ def extract(byte_data):
     mccDcV5 = bytes_to_int(byte_data[45:47], byteorder=BYTE_ORDER)
     mccDcI5 = bytes_to_int(byte_data[47:49], byteorder=BYTE_ORDER)
     mccDcP5 = bytes_to_int(byte_data[49:51], byteorder=BYTE_ORDER)
-    mccDcLow = bytes_to_int(byte_data[57])
+    mccDcLowState = bytes_to_int(byte_data[57])
 
     # client attributes
     mccSystemClock = bytes_to_int(byte_data[51:55], byteorder=BYTE_ORDER)
@@ -74,7 +74,7 @@ def extract(byte_data):
     _read_telemetry('mccDcV5', mccDcV5)
     _read_telemetry('mccDcI5', mccDcI5)
     _read_telemetry('mccDcP5', mccDcP5)
-    _read_telemetry('mccDcLow', mccDcLow)
+    _read_telemetry('mccDcLowState', mccDcLowState)
 
     # client attributes
     _read_attribute('mccSystemClock', mccSystemClock)

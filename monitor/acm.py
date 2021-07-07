@@ -105,7 +105,7 @@ def check_status():
     mccSmokeState = telemetries['mccSmokeState']
     mccFireState = telemetries['mccFireState']
 
-    atsAcState = client_attributes['atsAcState']
+    atsAcState = telemetries['atsAcState']
 
     atsVacP1 = telemetries['atsVacP1']
     atsVacP2 = telemetries['atsVacP2']

@@ -2,20 +2,17 @@ import time
 
 import requests
 
-from config import *
 from config.common import *
 from config.common_api import *
-from config.common_lcd_services import *
+# from config.common_lcd_services import *
 from devices.utils import read_lcd_services
 from model.alarm_lcd import Alarm_lcd
 from model.lcd import Lcd
-from services.lcd.alarm_lcd_services import check_alarm, delete_row4, delete_row3
-from operate.led_thread import get_sate_led_alarm
+from services.lcd.alarm_lcd_services import check_alarm
 from operate.rfid_thread import KEY_RFID
-from services.lcd.main_screen_lcd_services import write_to_json
-from services.lcd_cmd import clear_display
+from services.lcd.main_screen_lcd_services import write_to_json, screen_main
 from utility import bytes_to_int
-from model import menu
+from services.menu import *
 
 url_send_sa = PREFIX + DOMAIN + API_UPDATE_SHARED_ATTRIBUTES
 url_get_staff = PREFIX + DOMAIN + API_GET_STAFF
@@ -38,14 +35,16 @@ acmTempOutOld = ''
 acmHumidInOld = ''
 warningOld = ''
 
+last_stt_bt = 0
 
+# button_status[0]
 def call():
     try:
         period = 3
-        int_file_trace()
         while True:
-            check_key_code()
-            # lcd.menu(button_status[0])
+            button = check_button(lcd_services)
+            LOGGER.info('Send button value: %s', str(button))
+            main_menu(button)
             time.sleep(period)
     except Exception as ex:
         LOGGER.error('Error at call function in menu_thread with message: %s', ex.message)
@@ -225,8 +224,6 @@ def switch_lcd_service(input_lcd):
             #     pass
             elif key_code == KEYCODE_12:
                 remove_json_file_alarm()
-                delete_row3()
-                delete_row4()
                 check_alarm()
             elif key_event == EVENT_DOWN:
                 pass
@@ -427,3 +424,26 @@ def run_repeat_cmd_lcd(str_cmd):
     for x in range(num):
         cmd_lcd[UPDATE_VALUE] = str_cmd
         time.sleep(0.1)
+
+def check_button(bt_info):
+    global last_stt_bt
+    try:
+        LOGGER.info('Enter check_button function')
+        if bt_info:
+            key_code = bt_info['key_code']
+            key_event = bt_info['key_event']
+            LOGGER.info('check_button function key code: %s, key event: %s', str(key_code), str(key_event))
+            if int(key_code) in LIST_KEYCODE:
+                index_key = int(LIST_KEYCODE.index(key_code))
+                LOGGER.info('Key code exist in list key code')
+            if key_event == EVENT_UP:
+                event = EVENT_UP_BT
+            elif key_event == EVENT_HOLD:
+                event = EVENT_HOLD_BT
+            button = event * index_key
+            if last_stt_bt != button:
+                last_stt_bt = button
+                LOGGER.info('return button value: %s', LOG_BUTTON[str(button)])
+            return button
+    except Exception as ex:
+        LOGGER.error('check_button function error: %s', ex.message)

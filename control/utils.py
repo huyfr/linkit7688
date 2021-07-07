@@ -8,8 +8,8 @@ from config.common_led import LIST_LED
 from config.common_method import *
 from control.switcher import *
 from control.target import *
-from operate.io_thread import ser
-from utility import with_check_sum
+from operate.io_thread import ser, _read_data
+from utility import with_check_sum, blocking_read
 
 
 def _check_command(device, command):
@@ -414,13 +414,14 @@ def set_alarm_state_to_dct(dct_telemetry):
 
 
 def write_update_value(bytes_command):
+    result = False
     try:
-        response = ser.write(bytes_command)
+        write_stream = with_check_sum(bytes_command, BYTE_ORDER)
+        response = ser.write(write_stream)
         if response > 0:
-            LOGGER.info('Response when send command UPDATE_VALUE: %s', str(response))
-            return True
-        else:
-            return False
+            result = True
+        LOGGER.info('Response when send command UPDATE_VALUE: %s', str(response))
     except Exception as ex:
         LOGGER.error('Error at function write_update_value with message: %s', ex.message)
+    return result
 

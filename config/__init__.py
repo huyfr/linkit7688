@@ -39,7 +39,6 @@ cmd_sa = {}
 dict_cmd = {}
 dct_alarm = {}
 
-button_status = [0]
 
 update_attributes_lock = threading.Lock()
 telemetries_lock = threading.Lock()
