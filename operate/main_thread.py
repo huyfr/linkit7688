@@ -9,7 +9,7 @@ from config import *
 from config.default_data import data_dict
 from devices import clock
 from . import subscription_thread, monitor_thread, io_thread, telemetry_thread, update_attributes_thread, ui_thread, \
-    shared_attributes_thread, rfid_thread, led_thread, lcd_thread, check_connection_thread
+    shared_attributes_thread, rfid_thread, led_thread, lcd_thread, check_connection_thread, get_ip_mcc_thread
 from .update_attributes_thread import format_client_attributes, get_list_key
 
 semaphore = threading.Semaphore(0)
@@ -97,11 +97,7 @@ def call():
         CLIENT.gw_subscribe_to_all_attributes(callback=subscription_thread._attribute_change_callback)
         CLIENT.gw_set_server_side_rpc_request_handler(handler=subscription_thread._gw_rpc_callback)
 
-        thread_list = [lcd_thread, io_thread, update_attributes_thread, telemetry_thread, led_thread, shared_attributes_thread, rfid_thread, monitor_thread, check_connection_thread]
-        # thread_list = [lcd_thread, io_thread, update_attributes_thread, telemetry_thread, led_thread,
-        #              shared_attributes_thread, rfid_thread, monitor_thread]
-        # enable when test in IDE
-        # thread_list = [update_attributes_thread, telemetry_thread, led_thread, lcd_thread, shared_attributes_thread, rfid_thread, monitor_thread]
+        thread_list = [lcd_thread, io_thread, update_attributes_thread, telemetry_thread, led_thread, shared_attributes_thread, rfid_thread, monitor_thread, check_connection_thread, get_ip_mcc_thread]
 
         for i, thread in enumerate(thread_list):
             thread.name = thread.__name__
@@ -112,13 +108,13 @@ def call():
         period = shared_attributes.get('mccPeriodUpdate', default_data.mccPeriodUpdate)
         original_update_cycle = math.floor(time.time() / UPDATE_PERIOD)
         while True:
-            if not CLIENT.is_connected():
-                LOGGER.info('Disconnected from server, try reconnecting')
-                try:
-                    CLIENT.connect(callback=_connect_callback)
-                    semaphore.acquire()
-                except:
-                    LOGGER.info('Fail to connect to server')
+            # if not CLIENT.is_connected():
+            #     LOGGER.info('Disconnected from server, try reconnecting')
+            #     try:
+            #         CLIENT.connect(callback=_connect_callback)
+            #         semaphore.acquire()
+            #     except:
+            #         LOGGER.info('Fail to connect to server')
 
             for i, thread in enumerate(thread_list):
                 if not thread.isAlive():
