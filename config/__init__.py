@@ -50,8 +50,7 @@ cmd_sa_lock = threading.Lock()
 class _OpData:
     ACM_SIZE = 29
     ATS_SIZE = 53
-    MCC_SIZE = 59
-    # MCC_SIZE = 63
+    MCC_SIZE = 75
     CRMU_SIZE = 19
     LCD_SIZE = 4
     RPC_SIZE = 10
