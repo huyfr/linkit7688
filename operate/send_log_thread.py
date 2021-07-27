@@ -11,7 +11,7 @@ from config import LOGGER, device_config, shared_attributes, default_data
 from config.common_api import API_SEND_LOG, PREFIX, DOMAIN
 from control.utils import read_to_json, write_to_json
 
-TIME_PERIOD = 30
+TIME_PERIOD = 90
 LOG_PATH = './app.log.1'
 DESTINATION = './log'
 LAST_UPDATE_LOG_PATH = './last_update_log.json'
