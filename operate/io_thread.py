@@ -7,7 +7,6 @@ from devices import ats, crmu, clock, acm, mcc
 from operate.lcd_thread import extract_lcd_service
 from utility import *
 
-
 bt_info = []
 last_stt_bt = 0
 ser = serial.Serial(port=IO_PORT, baudrate=BAUDRATE)
@@ -68,6 +67,7 @@ def call():
                     cmd_led_formatted = {'length_led': length_led, 'arr_value': arr_value}
                     write_stream = with_check_sum(control.process_cmd_led(cmd_led_formatted), BYTE_ORDER)
                     ser.write(write_stream)
+                    LOGGER.info('Send command led to IO, length_led %s, arr_value %s', length_led, arr_value)
                     cmd_led_lock.acquire()
                     if cmd_led[length_led] == arr_value:
                         del cmd_led[length_led]
@@ -87,6 +87,7 @@ def call():
                     cmd_sa_formatted = {'module_id': module_id, 'value': value}
                     write_stream = with_check_sum(control.process_cmd_sa(cmd_sa_formatted), BYTE_ORDER)
                     ser.write(write_stream)
+                    LOGGER.info('Send command shared attributes to IO, module_id %s, value %s', module_id, value)
                     cmd_sa_lock.acquire()
                     if cmd_sa[module_id] == value:
                         del cmd_sa[module_id]
