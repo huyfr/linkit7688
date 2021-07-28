@@ -1,9 +1,5 @@
-import glob
 import os
-import shutil
-import subprocess
 import time
-from datetime import datetime
 
 import requests
 
@@ -16,43 +12,34 @@ LOG_PATH = './app.log.1'
 DESTINATION = './log'
 LAST_UPDATE_LOG_PATH = './last_update_log.json'
 SUCCESS = 1
-COMMAND_DELETE_LOG = 'rm /IoT/linkit7688/log/'
 url_send_log = PREFIX + DOMAIN + API_SEND_LOG
 
 
 def call():
     period = TIME_PERIOD
-    while True:
-        time.sleep(period)
-        existence = check_log_exist(LOG_PATH)
-
-        if not existence:
-            continue
-
-        detected = detect_new_log(LAST_UPDATE_LOG_PATH, LOG_PATH)
-
-        if not detected[0]:
-            continue
-
-        copied = copy_log(LOG_PATH)
-
-        if not copied[0] and not copied[1]:
-            continue
-
-        body = write_body_send_log(copied[2])
-        allow_upload = shared_attributes.get('mccUploadLog', default_data.mccUploadLog)
-
-        if len(body) > 0 and allow_upload:
-            response = send_log_smartsite(body[0], body[-1])
-
-            if not response:
+    try:
+        while True:
+            time.sleep(period)
+            existence = check_log_exist(LOG_PATH)
+            if not existence:
                 continue
 
-            dct_log_file = compose_file(detected[1], SUCCESS)
+            detected = detect_new_log(LAST_UPDATE_LOG_PATH, LOG_PATH)
+            if not detected[0]:
+                continue
 
-            if len(dct_log_file) > 0:
-                write_to_json(dct_log_file, LAST_UPDATE_LOG_PATH)
-                deleted = delete_log(copied[2])
+            body = write_body_send_log(LOG_PATH)
+            allow_upload = shared_attributes.get('mccUploadLog', default_data.mccUploadLog)
+            if len(body) > 0 and allow_upload:
+                response = send_log_smartsite(body[0], body[-1])
+                if not response:
+                    continue
+
+                dct_log_file = compose_file(detected[1], SUCCESS)
+                if len(dct_log_file) > 0:
+                    write_to_json(dct_log_file, LAST_UPDATE_LOG_PATH)
+    except Exception as ex:
+        LOGGER.warning('Error at call function in send_log_thread with message: %s', ex.message)
 
 
 def check_log_exist(path):
@@ -84,31 +71,6 @@ def detect_new_log(last_update_log_path, log_path):
     except Exception as ex:
         LOGGER.warning('Error at detect_new_log function with message: %s', ex.message)
     return result, last_modified
-
-
-def copy_log(source):
-    copied = False
-    renamed = False
-    destination = ''
-    try:
-        now = datetime.now()
-        new_name = now.strftime('%d-%m-%Y-%H-%M-%S') + '.txt'
-        if os.path.exists(source):
-            shutil.copy(source, DESTINATION)
-            copied = True
-            LOGGER.debug('Copy log successful!')
-        else:
-            LOGGER.debug('Fail while copy log to folder log')
-        if copied:
-            files = glob.glob(DESTINATION + '/*.log.1')
-            old_file = os.path.join(DESTINATION + '/' + os.path.basename(files[0]))
-            destination = os.path.join(DESTINATION + '/' + new_name)
-            os.rename(old_file, destination)
-            renamed = True
-            LOGGER.debug('Renamed log file successful!')
-    except Exception as ex:
-        LOGGER.warning('Error at copy_log function with message: %s', ex.message)
-    return copied, renamed, destination
 
 
 def write_body_send_log(path_file):
@@ -149,18 +111,4 @@ def compose_file(updated_date, status):
     except Exception as ex:
         LOGGER.warning('Error at compose_file function with message: %s', ex.message)
     return dct_log
-
-
-def delete_log(path_file):
-    result = False
-    try:
-        if os.path.exists(path_file):
-            file_name = path_file.split('/')[-1]
-            command = COMMAND_DELETE_LOG + file_name
-            subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-            result = True
-            LOGGER.debug('Remove file log successful!')
-    except Exception as ex:
-        LOGGER.warning('Error at delete_log function with message: %s', ex.message)
-    return result
 

@@ -92,6 +92,7 @@ def call():
                     if cmd_sa[module_id] == value:
                         del cmd_sa[module_id]
                     cmd_sa_lock.release()
+                    time.sleep(1)
         except Exception as ex:
             LOGGER.error('Error send shared attributes command to STM32 with message: %s', ex.message)
 

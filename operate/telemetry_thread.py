@@ -7,18 +7,22 @@ from control.utils import set_alarm_state_to_dct
 def call():
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
-        if CLIENT.is_connected():
-            telemetry = format_telemetry(telemetries)
-            for key, value in telemetry.items():
-                response = CLIENT.gw_send_telemetry(key, value)
-                LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
-                if response.rc() != 0:
-                    CLIENT.disconnect()
-            set_alarm_state_to_dct(telemetry)
-            LOGGER.info('Dictionary telemetries: %s', telemetries)
-        else:
-            LOGGER.debug('Gateway is disconnect from Thingsboard!')
-        time.sleep(period)
+        try:
+            if CLIENT.is_connected():
+                telemetry = format_telemetry(telemetries)
+                for key, value in telemetry.items():
+                    response = CLIENT.gw_send_telemetry(key, value)
+                    LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
+                    if response.rc() != 0:
+                        CLIENT.disconnect()
+                set_alarm_state_to_dct(telemetry)
+                LOGGER.debug('Dictionary telemetries: %s', telemetries)
+            else:
+                LOGGER.debug('Gateway is disconnected!')
+                CLIENT.disconnect()
+            time.sleep(period)
+        except Exception as ex:
+            LOGGER.warning('Error at call function in telemetry_thread with message: %s', ex.message)
 
 
 def save_history_telemetry(dct_telemetry):
