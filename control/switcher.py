@@ -60,9 +60,9 @@ def parse_acm_command_to_number(command):
 # Command ATS
 def parse_ats_command_to_number(command):
     switcher_ats_command = {
-        COMMAND_ATS_MAIN_ON: 0,
-        COMMAND_ATS_GEN_ON: 1,
-        COMMAND_ATS_AUTO_ON: 2,
+        COMMAND_ATS_MAIN_ON: 1,
+        COMMAND_ATS_GEN_ON: 2,
+        COMMAND_ATS_AUTO_ON: 0,
         COMMAND_ATS_OFF: 3,
         COMMAND_ATS_STOP_GEN: 0,
         COMMAND_ATS_START_GEN: 1
