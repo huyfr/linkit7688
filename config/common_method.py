@@ -23,7 +23,7 @@ SET_ACM_SELF_PROPELLED = 'setControlSelfPropelledAcm'
 # get state ats
 GET_STATE_ATS = 'getStateAts'
 # auto ats
-SET_ATS_AUTO = 'setAutoAts'
+SET_ATS_AUTO = 'setControlAtsAuto'
 # manual main
 SET_ATS_MAIN = 'setControlAtsMain'
 # manual gen
