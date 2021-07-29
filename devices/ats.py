@@ -41,6 +41,7 @@ def extract(byte_data):
     atsPac1 = bytes_to_int(byte_data[43:45], byteorder=BYTE_ORDER)
     atsPac2 = bytes_to_int(byte_data[45:47], byteorder=BYTE_ORDER)
     atsPac3 = bytes_to_int(byte_data[47:49], byteorder=BYTE_ORDER)
+    atsGenRunningDuration = bytes_to_int(byte_data[52:56], byteorder=BYTE_ORDER)
 
     # telemetry
     _read_telemetry('atsVacFreq', atsVacFreq)
@@ -69,6 +70,7 @@ def extract(byte_data):
     _read_telemetry('atsGenState', atsGenState)
     _read_telemetry('atsState', atsState)
     _read_telemetry('atsConnect', atsConnect)
+    _read_telemetry('atsGenRunningDuration', atsGenRunningDuration)
 
     # client attributes
     _read_attribute('atsVacP1State', atsVacP1State)
