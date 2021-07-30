@@ -51,7 +51,7 @@ def get_detail_screen1_ats():
         all_row = read_to_json(last_cmd_lcd)
 
         row2 = 'Dien luoi: ' + convert_to_string_default('atsAcState', 1)
-        row3 = 'May phat: ' + convert_to_string_default('atsGenState', 1)
+        row3 = 'May phat: ' + convert_to_string_default('atsGenState', 1) + '(' + convert_to_string_default('atsGenRunningDuration', 1) + 'p)'
         row4 = 'Che do M.Phat: ' + convert_to_string_default('atsState', 1)
         if all_row['row2'] != row2:
             process_cmd_lcd(ROW_2, UPDATE_VALUE, str(row2))
