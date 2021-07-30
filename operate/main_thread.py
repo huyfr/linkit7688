@@ -112,6 +112,7 @@ def set_log_level(int_level):
 
 
 def auto_reconnect_thingsboard():
+    LOGGER.info('State of client: %s', CLIENT.is_connected())
     try:
         if not CLIENT.is_connected():
             LOGGER.info('Disconnected from server, try reconnecting')
