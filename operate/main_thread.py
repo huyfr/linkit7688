@@ -38,7 +38,7 @@ def _on_receive_shared_attributes_callback(content, exception):
             shared_attributes[key] = value
     else:
         LOGGER.error(exception)
-        disconnect_thingsboard()
+        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
     semaphore.release()
 
 
@@ -58,7 +58,7 @@ def _on_receive_client_attributes_callback(content, exception):
             client_attributes[key] = value
     else:
         LOGGER.error(exception)
-        disconnect_thingsboard()
+        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
     semaphore.release()
 
 
@@ -81,7 +81,7 @@ def call():
         original_update_cycle = math.floor(time.time() / UPDATE_PERIOD)
         while True:
             # auto reconnect
-            auto_reconnect_thingsboard()
+            # auto_reconnect_thingsboard()
 
             # init when thread died
             restart_thread(thread_list)
@@ -100,7 +100,7 @@ def call():
             time.sleep(period)
     except Exception as ex:
         LOGGER.error('Fatal error %s, terminate immediately', str(ex.message))
-        disconnect_thingsboard()
+        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
 
 
 def set_log_level(int_level):
@@ -112,13 +112,13 @@ def set_log_level(int_level):
 
 
 def auto_reconnect_thingsboard():
-    LOGGER.info('State of client: %s', CLIENT.is_connected())
+    LOGGER.info('Connection status to thingsboard: %s', CLIENT.is_connected())
     try:
         if not CLIENT.is_connected():
             LOGGER.info('Disconnected from server, try reconnecting')
             init_connect(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
         else:
-            LOGGER.info('Gateway is connected!')
+            LOGGER.info('Gateway is still connected!')
     except Exception as ex:
         LOGGER.error('Error at auto_reconnect_thingsboard function with message: %s', ex.message)
 
@@ -133,7 +133,7 @@ def clone_default_data():
             f.write(unicode(json.dumps(default_data.data_dict, ensure_ascii=True), 'utf8'))
         os.system('rm /IoT/linkit7688/config/data.json && mv /IoT/linkit7688/config/data.tmp /IoT/linkit7688/config/data.json')
     except Exception as ex:
-        LOGGER.error('Cannot persist data, error %s', ex.message)
+        LOGGER.warning('Cannot persist data, error %s', ex.message)
 
 
 def restart_thread(thread_list):
@@ -143,7 +143,7 @@ def restart_thread(thread_list):
                 LOGGER.debug('Thread %s died, restarting', thread.getName())
                 thread_list[i] = _init_thread(thread)
     except Exception as ex:
-        LOGGER.debug('Error at restart_thread function with message: %s', ex.message)
+        LOGGER.warning('Error at restart_thread function with message: %s', ex.message)
 
 
 def auto_update(current_update_cycle, original_update_cycle):
@@ -171,9 +171,17 @@ def auto_update(current_update_cycle, original_update_cycle):
         LOGGER.error('Cannot update repository, error %s', ex.message)
 
 
-def disconnect_thingsboard():
-    CLIENT.disconnect()
-    LOGGER.info('Disconnect 3 devices and client successful!')
+def disconnect_thingsboard(mcc, ats, acm):
+    try:
+        CLIENT.disconnect()
+        LOGGER.info('Disconnect client successful!')
+        CLIENT.gw_disconnect_device(mcc)
+        CLIENT.gw_disconnect_device(ats)
+        CLIENT.gw_disconnect_device(acm)
+        LOGGER.info('Disconnect 3 devices successful!')
+    except Exception as ex:
+        LOGGER.error('Device cannot be disconnected when MCC no internet')
+        LOGGER.error('Error at disconnect_thingsboard function with message: %s', ex.message)
 
 
 def init_connect(mcc, ats, acm):
@@ -183,7 +191,7 @@ def init_connect(mcc, ats, acm):
 
         if CLIENT.is_connected():
             LOGGER.debug('Set IO time')
-            clock.set()
+            # clock.set()
             # shared_attributes
             device_shared_attributes_name = format_client_attributes(data_dict['shared'])
             for key, value in device_shared_attributes_name.items():
