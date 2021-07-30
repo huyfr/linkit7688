@@ -31,6 +31,8 @@ disconnected = False
 
 
 def call():
+    global disconnected
+    from operate.main_thread import disconnect_thingsboard
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
         try:
@@ -39,8 +41,12 @@ def call():
                 for key, value in telemetry.items():
                     response = CLIENT.gw_send_telemetry(key, value)
                     LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
+                    if response.rc() != 0 and disconnected:
+                        disconnected = False
+                        disconnect_thingsboard()
                 set_alarm_state_to_dct(telemetry)
                 LOGGER.debug('Dictionary telemetries: %s', telemetries)
+                disconnected = True
             else:
                 LOGGER.debug('Gateway is disconnected!')
             time.sleep(period)
