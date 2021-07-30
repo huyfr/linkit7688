@@ -1,6 +1,7 @@
 import time
 
 from config import *
+from operate.main_thread import disconnect_thingsboard
 
 
 def call():
@@ -16,6 +17,7 @@ def call():
             update_attributes_lock.release()
         else:
             LOGGER.debug('Gateway is disconnect from Thingsboard')
+            disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
         time.sleep(period)
 
 
