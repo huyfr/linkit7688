@@ -44,7 +44,7 @@ def get_state_ats(method):
     value = -1
     try:
         if method == GET_STATE_ATS:
-            value = client_attributes.get('atsMode', default_data.atsMode)
+            value = telemetries.get('atsMode', default_data.atsMode)
         elif method == GET_STATE_GEN_ATS:
             value = 0  # TODO: need key for get state of generate
     except Exception as ex:
