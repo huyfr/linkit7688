@@ -1,6 +1,4 @@
 import struct
-import time
-from datetime import datetime
 
 from config import *
 from config.common import *
@@ -397,11 +395,25 @@ def read_to_json(file_url):
     return json_info
 
 
-def test_lcd_speed():
-    dt = datetime.now()
-    compose_command_lcd(1, UPDATE_VALUE, str(dt.day) + "/" + str(dt.month) + "/" + str(dt.year))
-    while True:
-        dt = datetime.now()
-        compose_command_lcd(2, UPDATE_VALUE, str(dt.hour) + ":" + str(dt.minute) + ":" + str(dt.second)
-                            + "." + str(dt.microsecond / 100000))
-        time.sleep(0.5)
+def validate_log_level(sa_log_level):
+    level = -1
+    try:
+        if isinstance(sa_log_level, int):
+            if sa_log_level == 1:
+                level = logging.DEBUG
+            elif sa_log_level == 2:
+                level = logging.INFO
+            elif sa_log_level == 3:
+                level = logging.WARNING
+            elif sa_log_level == 4:
+                level = logging.ERROR
+            elif sa_log_level == 5:
+                level = logging.CRITICAL
+            else:
+                level = sa_log_level
+            LOGGER.debug('Log level declared on server is: %s', str(level))
+        else:
+            LOGGER.warning('Log level get from server is not number')
+    except Exception as ex:
+        LOGGER.warning('Error at validate_log_level function with message: %s', ex.message)
+    return level

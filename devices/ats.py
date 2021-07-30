@@ -71,6 +71,8 @@ def extract(byte_data):
     _read_telemetry('atsState', atsState)
     _read_telemetry('atsConnect', atsConnect)
     _read_telemetry('atsGenRunningDuration', atsGenRunningDuration)
+    _read_telemetry('atsErrorState', atsErrorState)
+    _read_telemetry('atsMode', atsMode)
 
     # client attributes
     _read_attribute('atsVacP1State', atsVacP1State)
@@ -79,5 +81,4 @@ def extract(byte_data):
     _read_attribute('atsVgenP1State', atsVgenP1State)
     _read_attribute('atsVgenP2State', atsVgenP2State)
     _read_attribute('atsVgenP3State', atsVgenP3State)
-    _read_attribute('atsErrorState', atsErrorState)
-    _read_attribute('atsMode', atsMode)
+
