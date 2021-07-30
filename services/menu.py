@@ -195,7 +195,7 @@ def ats_display():
             ats_screen_index = 0
 
         func = ats_display_func[ats_screen_index]
-        LOGGER.debug('ATS DISPLAY DETAIL %s', str(ats_screen_index))
+        # LOGGER.debug('ATS DISPLAY DETAIL %s', str(ats_screen_index))
         return func()
     except Exception as ex:
         LOGGER.warning('ats_display function error: %s', ex.message)
@@ -340,9 +340,12 @@ def back_main_screen(button):
         if button != -1:
             start_time = time.time()
             cycle_flag = True
+        else:
+            return
         if cycle_flag is True:
-            time_count = time.time() - start_time
-            LOGGER.debug('Time out come back to main display: %ds', time_count)
+            if (time.time() - start_time) >= (time_count + 1):
+                time_count = time.time() - start_time
+                LOGGER.debug('Time out come back to main display: %ds', time_count)
         if time_count > TIME_OUT:
             time_count = 0
             cycle_flag = False
@@ -405,7 +408,8 @@ def main_menu(button):
             clear_display()
             start_flag = False
         clear_event()
-        back_main_screen(button)
+        if screen_lv1_index != ESC:
+            back_main_screen(button)
         if button in MENU_LV_1 and last_screen_lv1_index != button:
             screen_lv1_index = button
             setting_screen_index = 0
