@@ -9,6 +9,7 @@
     "mccLinkVersion": "https://raw.githubusercontent.com/huyfr/linkit7688/huyfr/version.json",
     "mccLinkCheckIC": "https://backend.smartsite.dft.vn/api/TokenAuth/GetIpMCC",
     "mccUploadLog": true,
+    "mccLogLevel": 10,
     "mccDcMinThreshold": 40,
     "mccDoorOpenTime": 5,
     "acmControlAuto": 1,
