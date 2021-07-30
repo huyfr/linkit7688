@@ -1,10 +1,10 @@
 import time
 
 from config import *
-from operate.main_thread import disconnect_thingsboard
 
 
 def call():
+    from operate.main_thread import disconnect_thingsboard
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
         if CLIENT.is_connected():

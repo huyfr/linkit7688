@@ -2,10 +2,10 @@ import time
 
 from config import *
 from control.utils import set_alarm_state_to_dct
-from operate.main_thread import disconnect_thingsboard
 
 
 def call():
+    from operate.main_thread import disconnect_thingsboard
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
         try:
