@@ -49,6 +49,7 @@ def call():
                 disconnected = True
             else:
                 LOGGER.debug('Gateway is disconnected!')
+            LOGGER.info('State of variable disconnected: %s', disconnected)
             time.sleep(period)
         except Exception as ex:
             LOGGER.warning('Error at call function in telemetry_thread with message: %s', ex.message)
