@@ -38,7 +38,7 @@ def _on_receive_shared_attributes_callback(content, exception):
             shared_attributes[key] = value
     else:
         LOGGER.error(exception)
-        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
+        disconnect_thingsboard()
     semaphore.release()
 
 
@@ -58,7 +58,7 @@ def _on_receive_client_attributes_callback(content, exception):
             client_attributes[key] = value
     else:
         LOGGER.error(exception)
-        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
+        disconnect_thingsboard()
     semaphore.release()
 
 
@@ -100,7 +100,7 @@ def call():
             time.sleep(period)
     except Exception as ex:
         LOGGER.error('Fatal error %s, terminate immediately', str(ex.message))
-        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
+        disconnect_thingsboard()
 
 
 def set_log_level(int_level):
@@ -170,10 +170,7 @@ def auto_update(current_update_cycle, original_update_cycle):
         LOGGER.error('Cannot update repository, error %s', ex.message)
 
 
-def disconnect_thingsboard(mcc, ats, acm):
-    CLIENT.gw_disconnect_device(mcc)
-    CLIENT.gw_disconnect_device(ats)
-    CLIENT.gw_disconnect_device(acm)
+def disconnect_thingsboard():
     CLIENT.disconnect()
     LOGGER.info('Disconnect 3 devices and client successful!')
 
