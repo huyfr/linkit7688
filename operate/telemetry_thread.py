@@ -2,6 +2,7 @@ import time
 
 from config import *
 from control.utils import set_alarm_state_to_dct
+from operate.main_thread import disconnect_thingsboard
 
 
 def call():
@@ -14,12 +15,12 @@ def call():
                     response = CLIENT.gw_send_telemetry(key, value)
                     LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
                     if response.rc() != 0:
-                        CLIENT.disconnect()
+                        disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
                 set_alarm_state_to_dct(telemetry)
                 LOGGER.debug('Dictionary telemetries: %s', telemetries)
             else:
                 LOGGER.debug('Gateway is disconnected!')
-                CLIENT.disconnect()
+                disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
             time.sleep(period)
         except Exception as ex:
             LOGGER.warning('Error at call function in telemetry_thread with message: %s', ex.message)
