@@ -191,7 +191,7 @@ def init_connect(mcc, ats, acm):
 
         if CLIENT.is_connected():
             LOGGER.debug('Set IO time')
-            # clock.set()
+            clock.set()
             # shared_attributes
             device_shared_attributes_name = format_client_attributes(data_dict['shared'])
             for key, value in device_shared_attributes_name.items():
