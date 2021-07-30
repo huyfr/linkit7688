@@ -2,11 +2,13 @@ import math
 import os
 import subprocess
 import time
+from logging import root
 
 import requests
 
 from config import *
 from config.default_data import data_dict
+from control.utils import validate_log_level
 from devices import clock
 from . import subscription_thread, monitor_thread, io_thread, telemetry_thread, update_attributes_thread, \
     shared_attributes_thread, rfid_thread, led_thread, lcd_thread, send_log_thread, update_t_acm_thread
@@ -108,6 +110,7 @@ def call():
         period = shared_attributes.get('mccPeriodUpdate', default_data.mccPeriodUpdate)
         original_update_cycle = math.floor(time.time() / UPDATE_PERIOD)
         while True:
+            # auto reconnect
             if not CLIENT.is_connected():
                 LOGGER.info('Disconnected from server, try reconnecting')
                 try:
@@ -118,11 +121,13 @@ def call():
             else:
                 LOGGER.info('Gateway is connected!')
 
+            # init when thread died
             for i, thread in enumerate(thread_list):
                 if not thread.isAlive():
                     LOGGER.debug('Thread %s died, restarting', thread.getName())
                     thread_list[i] = _init_thread(thread)
 
+            # copy file
             try:
                 # TODO: Check copy file
                 for key in default_data.data_dict:
@@ -134,6 +139,12 @@ def call():
             except Exception as e:
                 LOGGER.error('Cannot persist data, error %s', str(e))
 
+            # change log level
+            temp_level = shared_attributes.get('mccLogLevel', default_data.mccLogLevel)
+            level = validate_log_level(temp_level)
+            root.setLevel(level)
+
+            # check update
             current_update_cycle = math.floor(time.time() / UPDATE_PERIOD)
             if current_update_cycle > original_update_cycle and CLIENT.is_connected():
                 latest_version = -1
