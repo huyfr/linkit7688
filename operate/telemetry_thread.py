@@ -29,7 +29,6 @@ from control.utils import set_alarm_state_to_dct
 
 
 def call():
-    from operate.main_thread import disconnect_thingsboard
     period = shared_attributes.get('mccPeriodSendTelemetry', default_data.mccPeriodSendTelemetry)
     while True:
         try:
@@ -38,8 +37,6 @@ def call():
                 for key, value in telemetry.items():
                     response = CLIENT.gw_send_telemetry(key, value)
                     LOGGER.info('RC of send telemetry to Thingsboard is: %s', str(response.rc()))
-                    # if response.rc() != 0:
-                    #     disconnect_thingsboard(DEVICE_MCC, DEVICE_ATS, DEVICE_ACM)
                 set_alarm_state_to_dct(telemetry)
                 LOGGER.debug('Dictionary telemetries: %s', telemetries)
             else:

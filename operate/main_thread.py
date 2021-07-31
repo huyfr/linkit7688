@@ -80,6 +80,7 @@ def call():
         period = shared_attributes.get('mccPeriodUpdate', default_data.mccPeriodUpdate)
         original_update_cycle = math.floor(time.time() / UPDATE_PERIOD)
         while True:
+            LOGGER.info('Connection status to thingsboard: %s', CLIENT.is_connected())
             # auto reconnect
             # auto_reconnect_thingsboard()
 
@@ -90,8 +91,7 @@ def call():
             clone_default_data()
 
             # change log level
-            temp_level = shared_attributes.get('mccLogLevel', default_data.mccLogLevel)
-            set_log_level(temp_level)
+            # TODO: place function set_log_level in here
 
             # check update
             current_update_cycle = math.floor(time.time() / UPDATE_PERIOD)
@@ -209,10 +209,15 @@ def init_connect(mcc, ats, acm):
             LOGGER.debug('Get current time')
             clock.extract()
 
+        # connect devices
         CLIENT.gw_connect_device(mcc, "default")
         CLIENT.gw_connect_device(ats, "default")
         CLIENT.gw_connect_device(acm, "default")
+
+        # subscribe shared attributes
         CLIENT.gw_subscribe_to_all_attributes(callback=subscription_thread._attribute_change_callback)
+
+        # subscribe rpc
         CLIENT.gw_set_server_side_rpc_request_handler(handler=subscription_thread._gw_rpc_callback)
         LOGGER.info('Init connection completed')
     except Exception as ex:
