@@ -82,7 +82,7 @@ def call():
         while True:
             LOGGER.info('Connection status to thingsboard: %s', CLIENT.is_connected())
             # auto reconnect
-            # auto_reconnect_thingsboard()
+            # TODO: place function auto_reconnect_thingsboard in here
 
             # init when thread died
             restart_thread(thread_list)
@@ -175,12 +175,7 @@ def disconnect_thingsboard(mcc, ats, acm):
     try:
         CLIENT.disconnect()
         LOGGER.info('Disconnect client successful!')
-        CLIENT.gw_disconnect_device(mcc)
-        CLIENT.gw_disconnect_device(ats)
-        CLIENT.gw_disconnect_device(acm)
-        LOGGER.info('Disconnect 3 devices successful!')
     except Exception as ex:
-        LOGGER.error('Device cannot be disconnected when MCC no internet')
         LOGGER.error('Error at disconnect_thingsboard function with message: %s', ex.message)
 
 
