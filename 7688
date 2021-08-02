@@ -5,23 +5,26 @@ PIDFILE=/var/run/7688.pid
 start() {
   if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE); then
     echo 'Service already running' >&2
+    return 0
+  else
+    echo 'Starting service...' >&2
+    CMD="$SCRIPT  & echo \$! > $PIDFILE"
+    eval $CMD
+    echo 'Service started' >&2
     return 1
   fi
-  echo 'Starting service...' >&2
-  CMD="$SCRIPT  & echo \$! > $PIDFILE"
-  eval $CMD
-
-  echo 'Service started' >&2
 }
 
 stop() {
   if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
     echo 'Service not running' >&2
+    return 0
+  else
+    echo 'Stopping service...' >&2
+    kill -9 $(cat "$PIDFILE") && rm -f "$PIDFILE"
+    echo 'Service stopped' >&2
     return 1
   fi
-  echo 'Stopping service...' >&2
-  kill -9 $(cat "$PIDFILE") && rm -f "$PIDFILE"
-  echo 'Service stopped' >&2
 }
 
 status() {
@@ -45,5 +48,5 @@ case "$1" in
     status
     ;;
   *)
-    echo "Usage: $0 {start|stop|restart|uninstall}"
+    echo "Usage: $0 {start|stop|status}"
 esac
